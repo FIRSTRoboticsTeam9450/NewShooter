@@ -96,7 +96,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Upper Speed", upperEncoder.getVelocity());
     SmartDashboard.putNumber("Lower Speed", lowerEncoder.getVelocity());
 
-    upperShooterMotor.set(0.9);
+    upperShooterMotor.set(1);
     lowerShooterMotor.set(1);
     if(!started) {
       timer.reset();
@@ -133,7 +133,8 @@ public class Shooter extends SubsystemBase {
 
   }
   public boolean rotateTil(double encoderValue) {
-    if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) > .05) {
+    if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) > .01) {
+      
       return false;
     } 
     return true;
