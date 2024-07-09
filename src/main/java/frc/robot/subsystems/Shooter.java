@@ -90,7 +90,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Upper Speed", upperEncoder.getVelocity());
     SmartDashboard.putNumber("Lower Speed", lowerEncoder.getVelocity());
 
-    upperShooterMotor.set(1);
+    upperShooterMotor.set(0.9);
     lowerShooterMotor.set(1);
     if(!started) {
       timer.reset();
@@ -131,15 +131,6 @@ public class Shooter extends SubsystemBase {
     intakeMotor.set(0);
     upperShooterMotor.set(0);
     lowerShooterMotor.set(0);
-  }
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
   }
 
   @Override
