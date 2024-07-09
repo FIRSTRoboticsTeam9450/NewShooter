@@ -13,16 +13,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ShootCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter shooter;
-  boolean ampShot;
+  String shotType;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ShootCommand(Shooter subsystem, boolean ampShot) {
+  public ShootCommand(Shooter subsystem, String type) {
     shooter = subsystem;
-    this.ampShot = ampShot;
+    shotType = type;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -40,7 +40,7 @@ public class ShootCommand extends Command {
   boolean finish = false;
   @Override
   public void execute() {
-    finish = shooter.runShooterMotors(ampShot);
+    finish = shooter.runShooterMotors(shotType);
 
   }
 

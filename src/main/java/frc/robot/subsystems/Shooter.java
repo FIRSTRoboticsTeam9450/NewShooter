@@ -94,15 +94,15 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  public boolean runShooterMotors(boolean amp) {
+  public boolean runShooterMotors(String type) {
     SmartDashboard.putNumber("Upper Speed", upperEncoder.getVelocity());
     SmartDashboard.putNumber("Lower Speed", lowerEncoder.getVelocity());
 
-    if(amp) {
+    if(type.equals("amp")) {
       upperShooterMotor.set(.1);
       lowerShooterMotor.set(.25);
     }
-    else {
+    else if(type.equals("normal")){
       upperShooterMotor.set(1);
       lowerShooterMotor.set(1);
     }

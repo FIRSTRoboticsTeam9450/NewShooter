@@ -51,8 +51,8 @@ public class RobotContainer {
   private void configureBindings() {     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, true)));
-    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, false)));
+    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, "amp")));
+    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, "normal")));
     m_driverController.a().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.497));
     m_driverController.b().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
