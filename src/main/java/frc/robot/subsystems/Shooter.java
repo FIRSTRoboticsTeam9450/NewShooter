@@ -7,10 +7,13 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -25,6 +28,9 @@ public class Shooter extends SubsystemBase {
   CANSparkMax rightRotateMotor = new CANSparkMax(29, MotorType.kBrushless);
   RelativeEncoder upperEncoder = upperShooterMotor.getEncoder();
   RelativeEncoder lowerEncoder = lowerShooterMotor.getEncoder();
+  SparkAbsoluteEncoder leftRotateThroughbore = leftRotateMotor.getAbsoluteEncoder();
+  SparkAbsoluteEncoder rightRotateThroughbore = rightRotateMotor.getAbsoluteEncoder();
+
   private static Shooter shooter;
   Timer timer = new Timer();
   boolean started = false;
@@ -118,11 +124,20 @@ public class Shooter extends SubsystemBase {
     return false;
   }
 
-  public void setRotationSpeed(double power) {
+  public void setRotationSpeed(double power, double encoderValue) {
+    if(encoderValue > leftRotateThroughbore.getPosition()) {
+      power *= -1;
+    }
     leftRotateMotor.set(power);
     rightRotateMotor.set(power);
-  }
 
+  }
+  public boolean rotateTil(double encoderValue) {
+    if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) > .05) {
+      return false;
+    } 
+    return true;
+  }
   public void setIntakeSpeed(double power) {
     intakeMotor.set(power);
   }
@@ -132,6 +147,7 @@ public class Shooter extends SubsystemBase {
     upperShooterMotor.set(0);
     lowerShooterMotor.set(0);
   }
+
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
@@ -144,7 +160,14 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    //System.out.println("Worked");
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("left throughbore position", leftRotateThroughbore.getPosition());
+    SmartDashboard.putNumber("left throughbore velocity", leftRotateThroughbore.getVelocity());
+    SmartDashboard.putNumber("right throughbore position", rightRotateThroughbore.getPosition());
+    SmartDashboard.putNumber("right throughbore velocity", rightRotateThroughbore.getVelocity());
+
   }
 
   @Override

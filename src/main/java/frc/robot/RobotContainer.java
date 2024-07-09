@@ -6,9 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ChangeAngleCommand;
+//import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
@@ -53,8 +54,10 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     m_driverController.rightTrigger().onTrue((new ShootCommand(shooter)));
-    m_driverController.a().whileTrue(new ChangeAngleCommand(shooter, -0.05));
-    m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
+    m_driverController.a().onTrue(new SetAngleCommand(shooter, .2, 0, 0.33));
+
+    // m_driverController.a().whileTrue(new ChangeAngleCommand(shooter, -0.05));
+    // m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
 
     m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, 0.2));
     m_driverController.rightBumper().whileTrue(new IntakeCommand(shooter, -0.2));
