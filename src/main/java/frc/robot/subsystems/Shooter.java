@@ -92,12 +92,20 @@ public class Shooter extends SubsystemBase {
     timer.reset();
 
   }
-  public boolean runShooterMotors() {
+
+
+  public boolean runShooterMotors(boolean amp) {
     SmartDashboard.putNumber("Upper Speed", upperEncoder.getVelocity());
     SmartDashboard.putNumber("Lower Speed", lowerEncoder.getVelocity());
 
-    upperShooterMotor.set(1);
-    lowerShooterMotor.set(1);
+    if(amp) {
+      upperShooterMotor.set(.1);
+      lowerShooterMotor.set(.25);
+    }
+    else {
+      upperShooterMotor.set(1);
+      lowerShooterMotor.set(1);
+    }
     if(!started) {
       timer.reset();
       timer.start();
@@ -133,7 +141,7 @@ public class Shooter extends SubsystemBase {
 
   }
   public boolean rotateTil(double encoderValue) {
-    if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) > .01) {
+    if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) > .001) {
       
       return false;
     } 

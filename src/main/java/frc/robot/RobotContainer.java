@@ -51,17 +51,19 @@ public class RobotContainer {
   private void configureBindings() {     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter)));
-    m_driverController.x().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.45));
-    m_driverController.a().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.29));
+    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, true)));
+    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, false)));
+    m_driverController.a().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.497));
+    m_driverController.b().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
+    //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     
     m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.05));
     m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
 
-    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, 0.7));
-    m_driverController.rightBumper().whileTrue(new IntakeCommand(shooter, -0.7));
+    m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.7));
+    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.7));
 
-    m_driverController.b().whileTrue(new TimeStampCommand(shooter));
+    //m_driverController.b().whileTrue(new TimeStampCommand(shooter));
 
   }
 
