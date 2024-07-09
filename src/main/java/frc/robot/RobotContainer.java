@@ -6,11 +6,13 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ChangeAngleCommand;
 //import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,21 +48,21 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-     new Trigger(shooter::exampleCondition)
-        .onTrue(new ShootCommand(shooter));
-
+  private void configureBindings() {     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.rightTrigger().onTrue((new ShootCommand(shooter)));
-    m_driverController.a().onTrue(new SetAngleCommand(shooter, .2, 0, 0.33));
+    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter)));
+    m_driverController.x().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.45));
+    m_driverController.a().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.29));
+    
+    m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.05));
+    m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
 
-    // m_driverController.a().whileTrue(new ChangeAngleCommand(shooter, -0.05));
-    // m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
+    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, 0.7));
+    m_driverController.rightBumper().whileTrue(new IntakeCommand(shooter, -0.7));
 
-    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, 0.2));
-    m_driverController.rightBumper().whileTrue(new IntakeCommand(shooter, -0.2));
+    m_driverController.b().whileTrue(new TimeStampCommand(shooter));
+
   }
 
   /**
