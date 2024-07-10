@@ -10,7 +10,7 @@ import frc.robot.subsystems.Shooter;
 
 public class SetAngleCommand extends Command {
 
-    Shooter shooter;
+    Shooter shooter = Shooter.getInstance("SetAngleCommand");
     double power;
     double distance;
     double encoderValue;
@@ -257,8 +257,7 @@ public class SetAngleCommand extends Command {
         ,0.3724513333
         ,0.3731356667};
 
-    public SetAngleCommand(Shooter shooter, double power, double distance, double encoderValue) {
-        this.shooter = shooter;
+    public SetAngleCommand(double power, double distance, double encoderValue) {
         this.power = power;
         this.distance = 40;
         // if(distance == 0) {
@@ -267,7 +266,7 @@ public class SetAngleCommand extends Command {
         // else {
         //     auto = true;
         // }
-        auto = true;
+        //auto = true;
         this.encoderValue = encoderValue;
         
     }
@@ -303,7 +302,7 @@ public class SetAngleCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setRotationSpeed(0, 0);
+        //shooter.setRotationSpeed(0, 0);
         //System.out.println("END.");
     }
     

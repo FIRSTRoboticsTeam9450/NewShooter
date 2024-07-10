@@ -14,7 +14,10 @@ import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ShootInfo;
+import frc.robot.subsystems.ShootPosition;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,6 +38,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    //shooter.currentShooterInfo = 
     // Configure the trigger bindings
     configureBindings();
   }
@@ -51,10 +55,17 @@ public class RobotContainer {
   private void configureBindings() {     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, "amp")));
-    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, "normal")));
-    m_driverController.a().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.497));
-    m_driverController.b().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
+    double distance = 0;
+    // m_driverController.
+
+    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, ShootPosition.AMP, new ShootInfo(.60, 0, .1, .25, ShootPosition.AMP))));
+
+    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, ShootPosition.NORMAL, new ShootInfo(.60, 0, 1, 1, ShootPosition.NORMAL))));
+    // m_driverController.povDown().onTrue(distance++);
+  
+
+    m_driverController.a().onTrue(new SetAngleCommand(-0.05, 0, 0.5));
+    m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.708));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     
     m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.05));
