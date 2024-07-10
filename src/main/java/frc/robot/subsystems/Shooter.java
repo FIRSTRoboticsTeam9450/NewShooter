@@ -30,6 +30,7 @@ public class Shooter extends SubsystemBase {
   RelativeEncoder lowerEncoder = lowerShooterMotor.getEncoder();
   SparkAbsoluteEncoder leftRotateThroughbore = leftRotateMotor.getAbsoluteEncoder();
   SparkAbsoluteEncoder rightRotateThroughbore = rightRotateMotor.getAbsoluteEncoder();
+  
 
   private static Shooter shooter;
   Timer timer = new Timer();
