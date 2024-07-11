@@ -34,7 +34,12 @@ public class ShootCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    info.rotationSpeed = info.finalRotationSpeed;
+    info.intakeSpeed = 0;
+    info.upperPower = info.finalUpperPower;
+    info.lowerPower = info.finalLowerPower;
     shooter.setShootInfo(info);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,22 +48,42 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     // finish = shooter.runShooterMotors(shotType, 0, 0);
+    if(shooter.onAngle) {
+      System.out.println("HUHHHHHHHHHHHHHHH");
+      info.rotationSpeed = 0;
+      if(shooter.shooterMotorsOn) {
+        info.intakeSpeed = info.finalIntakeSpeed;
+      }
 
+      if(shooter.noteShot) {
+        info.intakeSpeed = 0;
+        info.upperPower = 0;
+        info.lowerPower = 0;
+      }
+    }
+    shooter.setShootInfo(info);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // shooter.resetMotors();
+    info.rotationSpeed = 0;
+    info.intakeSpeed = 0;
+    info.lowerPower = 0;
+    info.upperPower = 0;
+    info.type = ShootPosition.STOP;
+    shooter.setShootInfo(info);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(info.type.equals(ShootPosition.STOP)) {
-      return true;
-    }
-    return false;
+
+    return shooter.noteShot;
+    // if(info.type.equals(ShootPosition.STOP)) {
+    //   return true;
+    // }
+    // return false;
 
   }
 }

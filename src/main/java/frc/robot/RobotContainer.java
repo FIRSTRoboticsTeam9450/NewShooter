@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.Cancel;
 import frc.robot.commands.ChangeAngleCommand;
 //import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
@@ -38,7 +39,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    //shooter.currentShooterInfo = 
+    
     // Configure the trigger bindings
     configureBindings();
   }
@@ -58,14 +59,17 @@ public class RobotContainer {
     double distance = 0;
     // m_driverController.
 
-    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, ShootPosition.AMP, new ShootInfo(.60, 0, .1, .25, ShootPosition.AMP))));
+    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, ShootPosition.AMP, new ShootInfo(.50, 0, .1, .25, .2, -0.05, ShootPosition.AMP))));
 
-    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, ShootPosition.NORMAL, new ShootInfo(.60, 0, 1, 1, ShootPosition.NORMAL))));
+    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, ShootPosition.NORMAL, new ShootInfo(.50, 0, 1, 1, .2, -0.05, ShootPosition.NORMAL))));
     // m_driverController.povDown().onTrue(distance++);
   
-
-    m_driverController.a().onTrue(new SetAngleCommand(-0.05, 0, 0.5));
-    m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.708));
+    ShootCommand intake = new ShootCommand(shooter, ShootPosition.INTAKE, new ShootInfo(.5, 0, 0, 0, .7, -0.05, ShootPosition.INTAKE));
+    Command cancel = new Cancel(intake);
+    m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
+    m_driverController.a().onFalse(cancel);//new SetAngleCommand(-0.05, 0, 0.5));
+    
+    m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     
     m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.05));

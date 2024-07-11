@@ -36,7 +36,8 @@ public class Shooter extends SubsystemBase {
   Timer timer = new Timer();
   boolean started = false;
   boolean intakeOn = false;
-  boolean noteIn = false;
+  public boolean noteIn = false;
+  public boolean noteShot = false;
   double normalUpper = 0;
   double normalLower = 0;
   double upperSpeed = 5676;
@@ -46,13 +47,13 @@ public class Shooter extends SubsystemBase {
   double lowerPower;
   double previousUpper = 0;
   double previousLower = 0;
-  boolean shooterMotorsOn = false;
-  boolean onAngle = false;
-  ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, ShootPosition.STOP);
+  public boolean shooterMotorsOn = false;
+  public boolean onAngle = false;
+  ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ShootPosition.STOP);
 
   int count = 0;
 
-  ShootInfo currentShooterInfo = new ShootInfo(-1.0, -1.0, -1.0, -1.0, ShootPosition.STOP);
+  ShootInfo currentShooterInfo;
   public static Shooter getInstance(String name) {
     if(shooter == null) {
       shooter = new Shooter();
@@ -78,6 +79,7 @@ public class Shooter extends SubsystemBase {
     upperShooterMotor.setIdleMode(IdleMode.kCoast);
     lowerShooterMotor.setIdleMode(IdleMode.kCoast);
 
+    currentShooterInfo = stop.copy();
   }
 
   /**
@@ -85,12 +87,12 @@ public class Shooter extends SubsystemBase {
    *
    * @return a command
    */
-  public Command shoot() {
+  public Command cancel() {
     // Inline construction of command goes here.
     // Subsystem::RunOnce implicitly requires `this` subsystem.
     return runOnce(
         () -> {
-          System.out.println("Shoot");
+          this.cancel();
           /* one-time action goes here */
         });
   }
@@ -125,10 +127,6 @@ public class Shooter extends SubsystemBase {
     //     break;
       
     // }
-    if(previousLower == 0) {
-      setShooterMotorSpeed(upperPower, lowerPower);
-    }
-    
     normalUpper = upperEncoder.getVelocity();
     normalLower = lowerEncoder.getVelocity();
     if(Math.abs(previousLower - normalLower) < 1 && Math.abs(previousUpper - normalUpper) < 1) {
@@ -166,9 +164,10 @@ public class Shooter extends SubsystemBase {
 
   public boolean startIntake() {
     if(!intakeOn) {
-      setIntakeSpeed(-1);
+      setIntakeSpeed(-.5);
     }
     if(intakeOn){
+      
       if(upperEncoder.getVelocity() - normalUpper < -600 || lowerEncoder.getVelocity() - normalLower < -600) {
         noteIn = true;
       }
@@ -190,24 +189,26 @@ public class Shooter extends SubsystemBase {
     if(encoderValue < leftRotateThroughbore.getPosition()) {
       power *= -1;
     }
+    
+    System.out.println("Power:" + power);
     leftRotateMotor.set(power);
     rightRotateMotor.set(power);
 
   }
   public boolean rotateTil(double encoderValue) {
-
     if(Math.abs(encoderValue - leftRotateThroughbore.getPosition()) < .001) {
-      shooter.setRotationSpeed(0, 0);
+      shooter.setRotationSpeed(0, leftRotateThroughbore.getPosition());
       return true;
     }
     else if(power < 0 && encoderValue > leftRotateThroughbore.getPosition()) {
-      shooter.setRotationSpeed(0, 0);
+      shooter.setRotationSpeed(0, leftRotateThroughbore.getPosition());
       return true;
     } 
     else if(power > 0 && encoderValue < leftRotateThroughbore.getPosition()) {
-      shooter.setRotationSpeed(0, 0);
+      shooter.setRotationSpeed(0, leftRotateThroughbore.getPosition());
       return true;
     }
+
 
     //System.out.println("Worked");
     return false;
@@ -232,6 +233,9 @@ public class Shooter extends SubsystemBase {
 
   public void setShootInfo(ShootInfo info) {
     if(!currentShooterInfo.isEqual(info)) {
+      System.out.println(info.type);
+      System.out.println(info.intakeSpeed);
+      System.out.println(info.rotationSpeed);
       currentShooterInfo = info.copy();
       currentShooterInfo.setNew(true);
     }
@@ -242,27 +246,57 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(!currentShooterInfo.type.equals(ShootPosition.STOP)){
-      System.out.println("worked");
+    if(!currentShooterInfo.type.equals(ShootPosition.STOP)) {
       if(currentShooterInfo.isNew()) {
-        setRotationSpeed(-.05, currentShooterInfo.encoderValue);
         initializeShoot();
-        
+        setIntakeSpeed(currentShooterInfo.intakeSpeed);
+        setShooterMotorSpeed(currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
+        setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
         currentShooterInfo.setNew(false);
+        System.out.println(currentShooterInfo.isNew());
       }
 
-      if(!shooterMotorsOn) {
-          runShooterMotors(currentShooterInfo.type, currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
-      }
+      
       onAngle = rotateTil(currentShooterInfo.encoderValue);
-      if(onAngle && shooterMotorsOn) {
-        if(startIntake()) {
-            resetMotors();
-            currentShooterInfo = stop.copy();
-            System.out.println("yippee");
-        }
-      }
+      System.out.println("ON ANGLE:"+onAngle);
+      shooterMotorsOn = runShooterMotors(currentShooterInfo.type, currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
+      
+      noteShot = startIntake();
     }
+
+    
+    // if(!currentShooterInfo.type.equals(ShootPosition.STOP)){
+    //   System.out.println("worked");
+    //     setRotationSpeed(-.05, currentShooterInfo.encoderValue);
+    //     initializeShoot();
+        
+        
+    //     currentShooterInfo.setNew(false);
+    // }
+
+    // if(!currentShooterInfo.type.equals(ShootPosition.INTAKE)) {
+    //   if(!shooterMotorsOn) {
+    //       runShooterMotors(currentShooterInfo.type, currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
+          
+    //       onAngle = rotateTil(currentShooterInfo.encoderValue);
+    //       if(onAngle) { // && shooterMotorsOn
+    //         if(startIntake()) {
+    //             resetMotors();
+    //             currentShooterInfo = stop.copy();
+    //             System.out.println("yippee");
+    //         }
+    //       }
+    //     }
+    // }
+    // else {
+    //   if(onAngle) { // && shooterMotorsOn
+    //     if(startIntake()) {
+    //         resetMotors();
+    //         currentShooterInfo = stop.copy();
+    //         System.out.println("yippee");
+    //     }
+    //   }
+    // }
 
     //System.out.println("Worked");
     // This method will be called once per scheduler run
@@ -271,7 +305,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("right throughbore position", rightRotateThroughbore.getPosition());
     SmartDashboard.putNumber("right throughbore velocity", rightRotateThroughbore.getVelocity());
 
-  }
+}
 
   @Override
   public void simulationPeriodic() {

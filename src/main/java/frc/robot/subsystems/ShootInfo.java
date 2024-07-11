@@ -1,13 +1,19 @@
 package frc.robot.subsystems;
 
 public class ShootInfo {
-    double encoderValue;
-    double distance;
-    double upperPower;
-    double lowerPower;
+    public double encoderValue;
+    public double distance;
+    public double upperPower;
+    public double lowerPower;
     public ShootPosition type;
-    boolean auto;
-    double angle;
+    public boolean auto;
+    public double angle;
+    public double intakeSpeed;
+    public double rotationSpeed;
+    public double finalIntakeSpeed;
+    public double finalUpperPower;
+    public double finalLowerPower;
+    public double finalRotationSpeed;
     double[] angleValues = {50.59359786
        ,47.70163251
        ,46.14099054
@@ -249,12 +255,17 @@ public class ShootInfo {
         ,0.5796
         ,0.5803};
 
-    private boolean isNew = false;
-    public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, ShootPosition type) {
+    private boolean isNew = true;
+    public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, double intakeSpeed, double rotationSpeed, ShootPosition type) {
         this.distance = distance;
         this.upperPower = upperPower;
+        finalUpperPower = upperPower;
+        finalLowerPower = lowerPower;
+        finalRotationSpeed = -.05;
         this.lowerPower = lowerPower;
         this.type = type;
+        finalIntakeSpeed = intakeSpeed;
+        this.intakeSpeed = 0;
         if(encoderValue != 0) {
             this.encoderValue = encoderValue;
         }
@@ -286,11 +297,11 @@ public class ShootInfo {
     }
 
     public ShootInfo copy() {
-        return new ShootInfo(encoderValue, distance, upperPower, lowerPower, type);
+        return new ShootInfo(encoderValue, distance, finalUpperPower, finalLowerPower, finalIntakeSpeed, finalRotationSpeed, type);
     }
 
     protected void setNew(boolean isNew) {
-        this.isNew = true;
+        this.isNew = isNew;
     }
 
     public boolean isNew() {
