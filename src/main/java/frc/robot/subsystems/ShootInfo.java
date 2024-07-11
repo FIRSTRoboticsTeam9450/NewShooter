@@ -10,10 +10,6 @@ public class ShootInfo {
     public double angle;
     public double intakeSpeed;
     public double rotationSpeed;
-    public double finalIntakeSpeed;
-    public double finalUpperPower;
-    public double finalLowerPower;
-    public double finalRotationSpeed;
     double[] angleValues = {50.59359786
        ,47.70163251
        ,46.14099054
@@ -259,14 +255,10 @@ public class ShootInfo {
     public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, double intakeSpeed, double rotationSpeed, ShootPosition type) {
         this.distance = distance;
         this.upperPower = upperPower;
-        finalUpperPower = upperPower;
-        finalLowerPower = lowerPower;
-        finalRotationSpeed = rotationSpeed;
         this.rotationSpeed = rotationSpeed;
         this.lowerPower = lowerPower;
         this.type = type;
-        finalIntakeSpeed = intakeSpeed;
-        this.intakeSpeed = 0;
+        this.intakeSpeed = intakeSpeed;
         if(encoderValue != 0) {
             this.encoderValue = encoderValue;
         }
@@ -298,7 +290,7 @@ public class ShootInfo {
     }
 
     public ShootInfo copy() {
-        return new ShootInfo(encoderValue, distance, finalUpperPower, finalLowerPower, finalIntakeSpeed, finalRotationSpeed, type);
+        return new ShootInfo(encoderValue, distance, upperPower, lowerPower, intakeSpeed, rotationSpeed, type);
     }
 
     protected void setNew(boolean isNew) {
@@ -314,7 +306,7 @@ public class ShootInfo {
         this.distance == other.distance &&
         this.upperPower == other.upperPower &&
         this.lowerPower == other.lowerPower && 
-        this.type.equals(other.type);
+        this.type.equals(other.type) && this.intakeSpeed == other.intakeSpeed;
     }
 
 }

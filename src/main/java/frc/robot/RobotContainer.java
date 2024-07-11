@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Cancel;
+//import frc.robot.commands.Cancel;
 import frc.robot.commands.ChangeAngleCommand;
 //import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.ShootPosition;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -56,27 +58,31 @@ public class RobotContainer {
   private void configureBindings() {     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    double distance = 0;
+    //double distance = SmartDashboard.getNumber("Distance:", 0);
     // m_driverController.
 
-    m_driverController.rightTrigger().whileTrue((new ShootCommand(shooter, ShootPosition.AMP, new ShootInfo(.50, 0, .1, .25, .2, -0.05, ShootPosition.AMP))));
-
-    m_driverController.rightBumper().whileTrue((new ShootCommand(shooter, ShootPosition.NORMAL, new ShootInfo(.50, 0, 1, 1, .2, -0.05, ShootPosition.NORMAL))));
+    ShootCommand amp = new ShootCommand(ShootPosition.AMP, new ShootInfo(.709, 0, .1, .25, -.7, 0.3, ShootPosition.AMP));
+    m_driverController.rightTrigger().onTrue((amp));
+    m_driverController.rightTrigger().onFalse(new Cancel(amp));
+    // .709 subwoof shot || .525 Ferry shot
+    ShootCommand shoot = new ShootCommand(ShootPosition.NORMAL, new ShootInfo(.709, 0, 1, 1, -.7, 0.6, ShootPosition.NORMAL));
+    m_driverController.rightBumper().onTrue((shoot));
+    m_driverController.rightBumper().onFalse(new Cancel(shoot));
     // m_driverController.povDown().onTrue(distance++);
   
-    ShootCommand intake = new ShootCommand(shooter, ShootPosition.INTAKE, new ShootInfo(.5, 0, 0, 0, .7, -0.05, ShootPosition.INTAKE));
-    Command cancel = new Cancel(intake);
-    m_driverController.a().whileTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
-    //m_driverController.a().onFalse(cancel);//new SetAngleCommand(-0.05, 0, 0.5));
+    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE, new ShootInfo(.51, 0, .5, .5, .2, 0.06, ShootPosition.INTAKE));
+    //Command cancel = new Cancel(intake);
+    m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
+    m_driverController.a().onFalse(new Cancel(intake));//new SetAngleCommand(-0.05, 0, 0.5));
     
-    m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
+    //m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     
-    m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.05));
-    m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.05));
+    m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.2));
+    m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.2));
 
-    m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.7));
-    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.7));
+    m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.3));
+    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.3));
 
     //m_driverController.b().whileTrue(new TimeStampCommand(shooter));
 

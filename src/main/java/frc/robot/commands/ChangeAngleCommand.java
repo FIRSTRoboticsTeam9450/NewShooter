@@ -15,7 +15,7 @@ public class ChangeAngleCommand extends Command {
 
     @Override
     public void initialize() {
-        shooter.setRotationSpeed(power,0);
+        shooter.setRotationSpeed(power, power, 0);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class ChangeAngleCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setRotationSpeed(0,0);
+        shooter.setRotationSpeed(0, 0, 0);
         //System.out.println("END.");
     }
     

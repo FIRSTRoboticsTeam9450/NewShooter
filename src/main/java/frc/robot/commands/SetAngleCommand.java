@@ -292,7 +292,7 @@ public class SetAngleCommand extends Command {
             encoderValue = encoderValues[left];
             System.out.println("ENCODER VALUE: " + encoderValue);
         }
-        shooter.setRotationSpeed(power, encoderValue);
+        shooter.setRotationSpeed(power, power, encoderValue);
     }
 
     @Override
@@ -308,6 +308,6 @@ public class SetAngleCommand extends Command {
     
     @Override
     public boolean isFinished() {
-        return shooter.rotateTil(encoderValue);
+        return shooter.rotateTil(encoderValue, 0);
     }
 }

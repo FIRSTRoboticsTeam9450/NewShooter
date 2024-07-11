@@ -14,32 +14,32 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** An example command that uses an example subsystem. */
 public class ShootCommand extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Shooter shooter;
+  private final Shooter shooter = Shooter.getInstance("ShootCommand");
   ShootPosition shotType;
   ShootInfo info;
-
+  ShootInfo preSetInfo;
+  boolean runOnceRotate = true;
+  boolean runOnceShoot = true;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ShootCommand(Shooter subsystem, ShootPosition type, ShootInfo info) {
-    shooter = subsystem;
+  public ShootCommand(ShootPosition type, ShootInfo info) {
     shotType = type;
-    this.info = info.copy();
+    preSetInfo = info.copy();
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    info.rotationSpeed = info.finalRotationSpeed;
+    info = preSetInfo.copy();
     info.intakeSpeed = 0;
-    info.upperPower = info.finalUpperPower;
-    info.lowerPower = info.finalLowerPower;
+    shooter.initializeShoot();
     shooter.setShootInfo(info);
-
+    runOnceRotate = true;
+    runOnceShoot = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,30 +49,28 @@ public class ShootCommand extends Command {
   public void execute() {
     // finish = shooter.runShooterMotors(shotType, 0, 0);
     if(shooter.onAngle) {
-      System.out.println("HUHHHHHHHHHHHHHHH");
-      info.rotationSpeed = 0;
-      if(shooter.shooterMotorsOn) {
-        info.intakeSpeed = info.finalIntakeSpeed;
-      }
-
-      if(shooter.noteShot) {
-        info.intakeSpeed = 0;
-        info.upperPower = 0;
-        info.lowerPower = 0;
+      if(runOnceRotate) {
+        info.rotationSpeed = 0;
+        shooter.setShootInfo(info);
+        runOnceRotate = false;
       }
     }
-    shooter.setShootInfo(info);
+    if(shooter.onAngle && shooter.shooterMotorsOn) {
+      System.out.println("YIPPPEEEEE");
+      if(runOnceShoot) {
+        info.intakeSpeed = preSetInfo.intakeSpeed;
+        //info.upperPower = 0;
+        shooter.setShootInfo(info);
+        
+        runOnceShoot = false;
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    info.rotationSpeed = 0;
-    info.intakeSpeed = 0;
-    info.lowerPower = 0;
-    info.upperPower = 0;
-    info.type = ShootPosition.STOP;
-    shooter.setShootInfo(info);
+    shooter.stop();
   }
 
   // Returns true when the command should end.
