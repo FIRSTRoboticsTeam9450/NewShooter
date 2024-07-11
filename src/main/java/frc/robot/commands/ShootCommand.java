@@ -78,8 +78,8 @@ public class ShootCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-
     return shooter.noteShot;
+    
     // if(info.type.equals(ShootPosition.STOP)) {
     //   return true;
     // }

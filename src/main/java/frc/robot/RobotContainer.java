@@ -66,8 +66,8 @@ public class RobotContainer {
   
     ShootCommand intake = new ShootCommand(shooter, ShootPosition.INTAKE, new ShootInfo(.5, 0, 0, 0, .7, -0.05, ShootPosition.INTAKE));
     Command cancel = new Cancel(intake);
-    m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
-    m_driverController.a().onFalse(cancel);//new SetAngleCommand(-0.05, 0, 0.5));
+    m_driverController.a().whileTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
+    //m_driverController.a().onFalse(cancel);//new SetAngleCommand(-0.05, 0, 0.5));
     
     m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));

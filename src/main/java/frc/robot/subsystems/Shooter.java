@@ -162,9 +162,9 @@ public class Shooter extends SubsystemBase {
     return false;
   }
 
-  public boolean startIntake() {
+  public boolean startIntake(double power) {
     if(!intakeOn) {
-      setIntakeSpeed(-.5);
+      setIntakeSpeed(power);
     }
     if(intakeOn){
       
@@ -261,7 +261,15 @@ public class Shooter extends SubsystemBase {
       System.out.println("ON ANGLE:"+onAngle);
       shooterMotorsOn = runShooterMotors(currentShooterInfo.type, currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
       
-      noteShot = startIntake();
+      noteShot = startIntake(currentShooterInfo.intakeSpeed);
+    }
+    else {
+      if(currentShooterInfo.isNew()) {
+        setIntakeSpeed(currentShooterInfo.intakeSpeed);
+        setShooterMotorSpeed(currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
+        setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
+        currentShooterInfo.setNew(false);
+      }
     }
 
     

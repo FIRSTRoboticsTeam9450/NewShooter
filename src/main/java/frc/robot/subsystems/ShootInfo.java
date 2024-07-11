@@ -261,7 +261,8 @@ public class ShootInfo {
         this.upperPower = upperPower;
         finalUpperPower = upperPower;
         finalLowerPower = lowerPower;
-        finalRotationSpeed = -.05;
+        finalRotationSpeed = rotationSpeed;
+        this.rotationSpeed = rotationSpeed;
         this.lowerPower = lowerPower;
         this.type = type;
         finalIntakeSpeed = intakeSpeed;
