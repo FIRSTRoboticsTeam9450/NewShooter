@@ -259,7 +259,7 @@ public class ShootInfo {
         this.lowerPower = lowerPower;
         this.type = type;
         this.intakeSpeed = intakeSpeed;
-        if(encoderValue != 0) {
+        if(encoderValue != -1) {
             this.encoderValue = encoderValue;
         }
         else if(distance > 0) {
@@ -284,7 +284,7 @@ public class ShootInfo {
             }
             mid = left + (right - left) / 2;
         }
-        encoderValue = encoderValues[left];
+        encoderValue = encoderValues[left] - Shooter.kLeftEncoderOffset; // eventually change to constant
         System.out.println("ENCODER VALUE: " + encoderValue);
         return encoderValue;
     }

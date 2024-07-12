@@ -63,8 +63,14 @@ public class Shooter extends SubsystemBase {
   public boolean checkRight = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
+  final double kMaxRotateSpeedUp = .5; // up .5 down -.2
+  final double kMaxRotateSpeedDown = -.3;
+  static final double kLeftEncoderOffset = .497;
+  final double kRightEncoderOffset = .497;
+  final double kMaxEncoderDifference = .02;
+  double previousRotatePower = 0;
   boolean oneTime = true;
-  final double kp = 1;
+  final double kp = 3;
 
   ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ShootPosition.STOP);
 
@@ -90,8 +96,8 @@ public class Shooter extends SubsystemBase {
     upperShooterMotor.setInverted(false);
     lowerShooterMotor.setInverted(true);
 
-    leftRotateMotor.setInverted(false);
-    rightRotateMotor.setInverted(true);
+    leftRotateMotor.setInverted(true);
+    rightRotateMotor.setInverted(false);
 
     upperShooterMotor.setIdleMode(IdleMode.kCoast);
     lowerShooterMotor.setIdleMode(IdleMode.kCoast);
@@ -141,6 +147,7 @@ public class Shooter extends SubsystemBase {
     noteShot = false;
     oneTime = true;
     count = 0;
+    previousRotatePower = 0;
     timer.reset();
 
   }
@@ -214,19 +221,19 @@ public class Shooter extends SubsystemBase {
   }
 
     
-  public double changeDirection(double encoderValue, double currentValue, double power) {
-    if(encoderValue > currentValue) {
-      return -Math.abs(power);
-    }
-    else{
-      return Math.abs(power);
-    }
-  }
+  // public double changeDirection(double encoderValue, double currentValue, double power) {
+  //   if(encoderValue > currentValue) {
+  //     return -Math.abs(power);
+  //   }
+  //   else{
+  //     return Math.abs(power);
+  //   }
+  // }
   public void setRotationSpeed(double leftPower, double rightPower, double encoderValue) {
     
     // leftPower = changeDirection(encoderValue, currentEncoderValue, leftPower);
     // rightPower = changeDirection(encoderValue, currentEncoderValue, rightPower);
-    System.out.println("Power:" + leftPower);
+    //System.out.println("Power:" + leftPower);
     leftRotateMotor.set(leftPower);
     rightRotateMotor.set(rightPower);
 
@@ -236,30 +243,43 @@ public class Shooter extends SubsystemBase {
 
   public double rotate(double targetEncoderValue, double currentEncoderValue) {
     double error = (targetEncoderValue - currentEncoderValue);
-    double power = -1 * (targetEncoderValue - currentEncoderValue) * kp;
-    if(error < 0) {
-      if(power > .2) {
-        power = .2;
-      }
+    double power = (targetEncoderValue - currentEncoderValue) * kp;
+
+    if(error >= 0) {
+      power = Math.min(kMaxRotateSpeedUp, power); // Limiting power when going up
     }
-    else if(error > 0) {
-      if(power < -.5) {
-        power = -.5;
-      }
+    else{
+      power = Math.max(kMaxRotateSpeedDown, power); // Limiting power when going down
     }
-    if(Math.abs(error) < .001) {
+    if(Math.signum(previousRotatePower) != Math.signum(power)) {
+      previousRotatePower = 0;
+    }
+    if(power - previousRotatePower > .01) {
+      power = previousRotatePower + .001;
+    }
+    else if(power - previousRotatePower < -.01) {
+      power = previousRotatePower - .001;
+    }
+
+
+    if(Math.abs(error) < .005) {
       onAngle = true;
     }
+    else {
+      onAngle = false;
+    }
+
+    previousRotatePower = power;
     return power;
   }
 
-  public boolean rotateTil(double encoderValue, double currentValue) {
+  // public boolean rotateTil(double encoderValue, double currentValue) {
     
-    if(Math.abs(encoderValue - currentValue) < .014) {
-      shooter.setRotationSpeed(0, 0, currentValue);
-      checkRight = true;
-      System.out.println("GOT HERE" + encoderValue + ":" + currentValue);
-    }
+  //   if(Math.abs(encoderValue - currentValue) < .014) {
+  //     shooter.setRotationSpeed(0, 0, currentValue);
+  //     checkRight = true;
+  //     System.out.println("GOT HERE" + encoderValue + ":" + currentValue);
+  //   }
     // else if(currentShooterInfo.rotationSpeed < 0 && encoderValue > currentValue) {
     //   shooter.setRotationSpeed(0, 0, currentValue);
     //   checkRight = true;
@@ -270,7 +290,7 @@ public class Shooter extends SubsystemBase {
     //   checkRight = true;
     //   System.out.println("GOT HERE less than"+ encoderValue + ":" + currentValue);
     // }
-    return checkRight;
+    // return checkRight;
     // currentValue = rightRotateThroughbore.getPosition();
     // if(checkRight) {
     //   if(Math.abs(encoderValue - currentValue) < .001) {
@@ -292,7 +312,7 @@ public class Shooter extends SubsystemBase {
     // }
     //System.out.println("Worked");
     // return false;
-  }
+  // }
   public void setIntakeSpeed(double power) {
     intakeMotor.set(power);
   }
@@ -326,6 +346,16 @@ public class Shooter extends SubsystemBase {
     return 100000;
   }
 
+  // zero basing encoders left encoder has .497 offset, right has ?
+
+  public double getLeftRotateEncoder() {
+    return leftRotateThroughbore.getPosition() - kLeftEncoderOffset;
+  }
+
+  public double getRightRotateEncoder() {
+    return rightRotateThroughbore.getPosition() - kRightEncoderOffset;
+  }
+
   public void setShootInfo(ShootInfo info) {
     if(!currentShooterInfo.isEqual(info)) {
       System.out.println(info.type);
@@ -333,6 +363,7 @@ public class Shooter extends SubsystemBase {
       System.out.println(info.rotationSpeed);
       currentShooterInfo = info.copy();
       currentShooterInfo.setNew(true);
+      System.out.println("TYPE: " + info.type);
     }
     else {
       System.out.println("Already going \n type:" + info.type);
@@ -340,35 +371,35 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stop() {
-    stop.encoderValue = currentEncoderValueLeft;
+    stop.encoderValue = getLeftRotateEncoder();
     setShootInfo(stop);
   }
 
   @Override
   public void periodic() {
     laserDistance = getLaserDistance(); // 60 mm is correct for intake
+
+    currentEncoderValueLeft = getLeftRotateEncoder();
+    currentEncoderValueRight = getRightRotateEncoder();
+    leftPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueLeft);
+    rightPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueRight);
+    if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
+      setShootInfo(stop);
+      System.out.println("encoder");
+    }
+    shooter.setRotationSpeed(leftPower, rightPower, currentShooterInfo.encoderValue);
     if(!currentShooterInfo.type.equals(ShootPosition.STOP)) {
-      currentEncoderValueLeft = leftRotateThroughbore.getPosition();
-      currentEncoderValueRight = rightRotateThroughbore.getPosition();
       lowerEncoderValue = lowerEncoder.getVelocity();
       upperEncoderValue = upperEncoder.getVelocity();
-
-      leftPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueLeft);
-      rightPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueRight);
-      if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > .02) {
-        setShootInfo(stop);
-        System.out.println("encoder");
-      }
-      shooter.setRotationSpeed(leftPower, rightPower, currentShooterInfo.encoderValue);
       
       if(currentShooterInfo.isNew()) {
         setIntakeSpeed(currentShooterInfo.intakeSpeed);
-        System.out.println(currentShooterInfo.intakeSpeed + "_____________ INTAKE SPEED");
+        //System.out.println(currentShooterInfo.intakeSpeed + "_____________ INTAKE SPEED");
         setShooterMotorSpeed(currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
-        System.out.println("SET CORRECT SPEED");
-        setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
+        //System.out.println("SET CORRECT SPEED");
+        // setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
         currentShooterInfo.setNew(false);
-        System.out.println(currentShooterInfo.isNew());
+        //System.out.println(currentShooterInfo.isNew());
       
       }
 
@@ -384,7 +415,7 @@ public class Shooter extends SubsystemBase {
       if(currentShooterInfo.isNew()) {
         setIntakeSpeed(currentShooterInfo.intakeSpeed);
         setShooterMotorSpeed(currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
-        setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
+        //setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
         currentShooterInfo.setNew(false);
       }
     }

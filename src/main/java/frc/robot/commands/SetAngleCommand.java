@@ -6,6 +6,7 @@ import java.util.Dictionary;
 import java.util.Scanner;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.Shooter;
 
 public class SetAngleCommand extends Command {
@@ -16,6 +17,9 @@ public class SetAngleCommand extends Command {
     double encoderValue;
     boolean auto;
     double angle;
+    ShootInfo info;
+    boolean everFalse = false;
+
     double[] angleValues = {50.59359786
        ,47.70163251
        ,46.14099054
@@ -257,9 +261,10 @@ public class SetAngleCommand extends Command {
         ,0.3724513333
         ,0.3731356667};
 
-    public SetAngleCommand(double power, double distance, double encoderValue) {
-        this.power = power;
-        this.distance = 40;
+    public SetAngleCommand(ShootInfo info) {
+        this.info = info.copy();
+        //this.power = power;
+        //this.distance = 40;
         // if(distance == 0) {
         //     auto = false;
         // }
@@ -267,36 +272,39 @@ public class SetAngleCommand extends Command {
         //     auto = true;
         // }
         //auto = true;
-        this.encoderValue = encoderValue;
+        //this.encoderValue = encoderValue;
+
         
     }
 
     @Override
     public void initialize() {
-        if(auto) {
-            angle = Math.asin((80/Math.sqrt(Math.pow(distance, 2) + Math.pow(80, 2))));
+        // if(auto) {
+        //     angle = Math.asin((80/Math.sqrt(Math.pow(distance, 2) + Math.pow(80, 2))));
             
-            int mid = angleValues.length/2;
-            int left = 0;
-            int right = angleValues.length-1;
-            while(left < right) {
+        //     int mid = angleValues.length/2;
+        //     int left = 0;
+        //     int right = angleValues.length-1;
+        //     while(left < right) {
 
-                if(angleValues[mid] < angle) {
-                    left = mid;
-                }
-                else {
-                    right = mid;
-                }
-                mid = left + (right - left) / 2;
-            }
-            encoderValue = encoderValues[left];
-            System.out.println("ENCODER VALUE: " + encoderValue);
-        }
-        shooter.setRotationSpeed(power, power, encoderValue);
+        //         if(angleValues[mid] < angle) {
+        //             left = mid;
+        //         }
+        //         else {
+        //             right = mid;
+        //         }
+        //         mid = left + (right - left) / 2;
+        //     }
+        //     encoderValue = encoderValues[left];
+        //     System.out.println("ENCODER VALUE: " + encoderValue);
+        // }
+        // shooter.initializeShoot();
+        shooter.setShootInfo(info);
     }
 
     @Override
     public void execute() {
+        
         //System.out.println("RUNNING!!!");
     }
 
@@ -304,10 +312,20 @@ public class SetAngleCommand extends Command {
     public void end(boolean interrupted) {
         //shooter.setRotationSpeed(0, 0);
         //System.out.println("END.");
+        shooter.stop();
+
     }
     
     @Override
     public boolean isFinished() {
-        return shooter.rotateTil(encoderValue, 0);
+        // if(shooter.onAngle == false) {
+        //     everFalse = true;
+        // }
+        // if(shooter.onAngle && everFalse) {
+        //     System.out.println("got to angle ____________________");
+        //     return true;
+        // }
+        return false;
+        //return shooter.rotateTil(encoderValue, 0);
     }
 }

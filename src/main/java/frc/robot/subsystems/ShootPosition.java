@@ -1,5 +1,5 @@
 package frc.robot.subsystems;
 
 public enum ShootPosition {
-    AMP, NORMAL, FREEZE, STOP, INTAKE
+    AMP, NORMAL, FREEZE, STOP, INTAKE, TEST
 }
