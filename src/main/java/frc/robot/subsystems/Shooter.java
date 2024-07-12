@@ -10,7 +10,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -31,6 +35,11 @@ public class Shooter extends SubsystemBase {
   SparkAbsoluteEncoder leftRotateThroughbore = leftRotateMotor.getAbsoluteEncoder();
   SparkAbsoluteEncoder rightRotateThroughbore = rightRotateMotor.getAbsoluteEncoder();
 
+  private LaserCan laser;
+  private LaserCan.Measurement measurement; 
+  MedianFilter medianDistance = new MedianFilter(3);
+  boolean laserIsDead = false;
+  double laserDistance;
 
   private static Shooter shooter;
   Timer timer = new Timer();
@@ -52,8 +61,11 @@ public class Shooter extends SubsystemBase {
   public boolean shooterMotorsOn = false;
   public boolean onAngle = false;
   public boolean checkRight = false;
-  double currentEncoderValue = 0;
+  double currentEncoderValueLeft = 0;
+  double currentEncoderValueRight = 0;
   boolean oneTime = true;
+  final double kp = 1;
+
   ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ShootPosition.STOP);
 
   int count = 0;
@@ -84,7 +96,20 @@ public class Shooter extends SubsystemBase {
     upperShooterMotor.setIdleMode(IdleMode.kCoast);
     lowerShooterMotor.setIdleMode(IdleMode.kCoast);
 
+    leftRotateMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    rightRotateMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+
     currentShooterInfo = stop.copy();
+
+    laser = new LaserCan(40);
+    try {
+      laser.setRangingMode(LaserCan.RangingMode.LONG);
+      laser.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 4, 4));
+      laser.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+    } catch(ConfigurationFailedException e) {
+      System.out.println("Laser configuration failed " + e);
+    }
+    measurement = laser.getMeasurement();
   }
 
   /**
@@ -199,8 +224,8 @@ public class Shooter extends SubsystemBase {
   }
   public void setRotationSpeed(double leftPower, double rightPower, double encoderValue) {
     
-    leftPower = changeDirection(encoderValue, currentEncoderValue, leftPower);
-    rightPower = changeDirection(encoderValue, currentEncoderValue, rightPower);
+    // leftPower = changeDirection(encoderValue, currentEncoderValue, leftPower);
+    // rightPower = changeDirection(encoderValue, currentEncoderValue, rightPower);
     System.out.println("Power:" + leftPower);
     leftRotateMotor.set(leftPower);
     rightRotateMotor.set(rightPower);
@@ -208,6 +233,26 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("rotate speed", leftPower);
 
   }
+
+  public double rotate(double targetEncoderValue, double currentEncoderValue) {
+    double error = (targetEncoderValue - currentEncoderValue);
+    double power = -1 * (targetEncoderValue - currentEncoderValue) * kp;
+    if(error < 0) {
+      if(power > .2) {
+        power = .2;
+      }
+    }
+    else if(error > 0) {
+      if(power < -.5) {
+        power = -.5;
+      }
+    }
+    if(Math.abs(error) < .001) {
+      onAngle = true;
+    }
+    return power;
+  }
+
   public boolean rotateTil(double encoderValue, double currentValue) {
     
     if(Math.abs(encoderValue - currentValue) < .014) {
@@ -265,6 +310,22 @@ public class Shooter extends SubsystemBase {
     // Query some boolean state, such as a digital sensor.
     return false;
   }
+
+  public double getLaserDistance() {
+    try {
+      measurement = laser.getMeasurement();
+      if(measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
+        laserIsDead = false;
+        return medianDistance.calculate(measurement.distance_mm);
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
+      laserIsDead = true;
+      e.printStackTrace();
+    }
+    return 100000;
+  }
+
   public void setShootInfo(ShootInfo info) {
     if(!currentShooterInfo.isEqual(info)) {
       System.out.println(info.type);
@@ -279,17 +340,26 @@ public class Shooter extends SubsystemBase {
   }
 
   public void stop() {
-    stop.encoderValue = currentEncoderValue;
+    stop.encoderValue = currentEncoderValueLeft;
     setShootInfo(stop);
   }
 
   @Override
   public void periodic() {
-    
+    laserDistance = getLaserDistance(); // 60 mm is correct for intake
     if(!currentShooterInfo.type.equals(ShootPosition.STOP)) {
-      currentEncoderValue = leftRotateThroughbore.getPosition();
+      currentEncoderValueLeft = leftRotateThroughbore.getPosition();
+      currentEncoderValueRight = rightRotateThroughbore.getPosition();
       lowerEncoderValue = lowerEncoder.getVelocity();
       upperEncoderValue = upperEncoder.getVelocity();
+
+      leftPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueLeft);
+      rightPower = rotate(currentShooterInfo.encoderValue, currentEncoderValueRight);
+      if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > .02) {
+        setShootInfo(stop);
+        System.out.println("encoder");
+      }
+      shooter.setRotationSpeed(leftPower, rightPower, currentShooterInfo.encoderValue);
       
       if(currentShooterInfo.isNew()) {
         setIntakeSpeed(currentShooterInfo.intakeSpeed);
@@ -302,7 +372,7 @@ public class Shooter extends SubsystemBase {
       
       }
 
-      onAngle = rotateTil(currentShooterInfo.encoderValue, currentEncoderValue);
+      //onAngle = rotateTil(currentShooterInfo.encoderValue, currentEncoderValue);
       System.out.println("ON ANGLE:"+onAngle);
       if(!shooterMotorsOn)
       {
@@ -355,7 +425,7 @@ public class Shooter extends SubsystemBase {
 
     //System.out.println("Worked");
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("left throughbore position", currentEncoderValue);
+    SmartDashboard.putNumber("left throughbore position", currentEncoderValueLeft);
     SmartDashboard.putNumber("Current Left Throughbore", leftRotateThroughbore.getPosition());
     SmartDashboard.putNumber("left throughbore velocity", leftRotateThroughbore.getVelocity());
     SmartDashboard.putNumber("right throughbore position", rightRotateThroughbore.getPosition());
