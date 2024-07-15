@@ -76,7 +76,7 @@ public class Shooter extends SubsystemBase {
   double previousLowerSpeed = 0;
   int periodicCounter = 0;
   boolean intakeSpeedFinal = false;
-  ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0);
 
   int count = 0;
 
@@ -369,6 +369,8 @@ public class Shooter extends SubsystemBase {
       currentShooterInfo.targetRotateEncoder = info.targetRotateEncoder;
     }
     currentShooterInfo.setNew(true);
+    manageFlags();
+
     // }
     // else {
     //   System.out.println("Already going \n type:" + info.type);

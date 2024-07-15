@@ -2,12 +2,16 @@ package frc.robot.subsystems;
 
 public class ShootInfo {
     public double targetRotateEncoder;
-    public double distance;
+    public double rotationSpeed;
+    
     public double upperShooterPower;
     public double lowerShooterPower;
-    public double angle;
+
     public double intakeSpeed;
-    public double rotationSpeed;
+
+    public double distance;
+    public double angle;
+
     double[] angleValues = {50.59359786
        ,47.70163251
        ,46.14099054
@@ -250,8 +254,7 @@ public class ShootInfo {
         ,0.6243033333};
 
     private boolean isNew = true;
-    public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, double intakeSpeed, double rotationSpeed) {
-        this.distance = distance;
+    public ShootInfo(double encoderValue, double rotationSpeed, double upperPower, double lowerPower, double intakeSpeed) {
         this.upperShooterPower = upperPower;
         this.rotationSpeed = rotationSpeed;
         this.lowerShooterPower = lowerPower;
@@ -262,6 +265,14 @@ public class ShootInfo {
         else if(distance > 0) {
             this.targetRotateEncoder = getEncoderValue(distance);
         }
+    }
+
+    public ShootInfo(double value) {
+        this.targetRotateEncoder = value;
+        this.rotationSpeed = value;
+        this.upperShooterPower = value;
+        this.lowerShooterPower = value;
+        this.intakeSpeed = value;
     }
 
 
@@ -288,7 +299,7 @@ public class ShootInfo {
     }
 
     public ShootInfo copy() {
-        return new ShootInfo(targetRotateEncoder, distance, upperShooterPower, lowerShooterPower, intakeSpeed, rotationSpeed);
+        return new ShootInfo(targetRotateEncoder, upperShooterPower, lowerShooterPower, intakeSpeed, rotationSpeed);
     }
 
     protected void setNew(boolean isNew) {

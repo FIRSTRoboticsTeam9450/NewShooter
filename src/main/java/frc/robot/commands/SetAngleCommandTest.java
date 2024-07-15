@@ -7,77 +7,18 @@ import java.util.Scanner;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShootInfo;
-import frc.robot.subsystems.ShootPosition;
-
 import frc.robot.subsystems.Shooter;
 
-public class SetAngleCommand extends Command {
+public class SetAngleCommandTest extends Command {
 
     Shooter shooter = Shooter.getInstance("SetAngleCommand");
     double power;
+    double distance;
     double encoderValue;
     boolean auto;
     double angle;
     ShootInfo info;
-    ShootPosition shotType;
     boolean everFalse = false;
-    boolean runOnceShoot = true;
-    public SetAngleCommand(ShootPosition type) {
-        this.shotType = type;
-    }
-
-    @Override
-    public void initialize() {
-        prepareShot();
-    }
-
-    @Override
-    public void execute() {
-        if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
-            info = new ShootInfo(Double.MAX_VALUE);
-            info.intakeSpeed = 0.3;
-      
-            shooter.setShootInfo(info);
-      
-            this.runOnceShoot = false;
-        }
-    }
-
-    //prepare the shooter motors for the shot
-    public void prepareShot() {
-        info = new ShootInfo(Double.MAX_VALUE);
-
-        //shot type:
-        switch (shotType) {
-        case AMP:
-            info.lowerShooterPower = 0.2;
-            info.upperShooterPower = 0.2;
-            info.targetRotateEncoder = 0.1;
-            break;
-
-        case SUBWOOFER:
-            info.lowerShooterPower = 0.6;
-            info.upperShooterPower = 0.6;
-            info.targetRotateEncoder = 0.708 - 0.497;
-            break;
-
-        default:
-        }
-        
-
-        shooter.setShootInfo(info);
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        shooter.stop();
-
-    }
-    
-    @Override
-    public boolean isFinished() {
-        return !shooter.noteIn;
-    }
 
     double[] angleValues = {50.59359786
        ,47.70163251
@@ -319,4 +260,72 @@ public class SetAngleCommand extends Command {
         ,0.371767
         ,0.3724513333
         ,0.3731356667};
+
+    public SetAngleCommandTest(ShootInfo info) {
+        this.info = info.copy();
+        //this.power = power;
+        //this.distance = 40;
+        // if(distance == 0) {
+        //     auto = false;
+        // }
+        // else {
+        //     auto = true;
+        // }
+        //auto = true;
+        //this.encoderValue = encoderValue;
+
+        
+    }
+
+    @Override
+    public void initialize() {
+        // if(auto) {
+        //     angle = Math.asin((80/Math.sqrt(Math.pow(distance, 2) + Math.pow(80, 2))));
+            
+        //     int mid = angleValues.length/2;
+        //     int left = 0;
+        //     int right = angleValues.length-1;
+        //     while(left < right) {
+
+        //         if(angleValues[mid] < angle) {
+        //             left = mid;
+        //         }
+        //         else {
+        //             right = mid;
+        //         }
+        //         mid = left + (right - left) / 2;
+        //     }
+        //     encoderValue = encoderValues[left];
+        //     System.out.println("ENCODER VALUE: " + encoderValue);
+        // }
+        // shooter.initializeShoot();
+        shooter.setShootInfo(info);
+    }
+
+    @Override
+    public void execute() {
+        
+        //System.out.println("RUNNING!!!");
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        //shooter.setRotationSpeed(0, 0);
+        //System.out.println("END.");
+        shooter.stop();
+
+    }
+    
+    @Override
+    public boolean isFinished() {
+        // if(shooter.onAngle == false) {
+        //     everFalse = true;
+        // }
+        // if(shooter.onAngle && everFalse) {
+        //     System.out.println("got to angle ____________________");
+        //     return true;
+        // }
+        return false;
+        //return shooter.rotateTil(encoderValue, 0);
+    }
 }
