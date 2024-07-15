@@ -20,6 +20,7 @@ public class ShootCommand extends Command {
   ShootInfo preSetInfo;
   boolean runOnceRotate = true;
   boolean runOnceShoot = true;
+  int previousPeriodicTime = 0;
   /**
    * Creates a new ExampleCommand.
    *
@@ -48,6 +49,7 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     // finish = shooter.runShooterMotors(shotType, 0, 0);
+    
     if(shooter.onAngle) {
       if(runOnceRotate) {
         info.rotationSpeed = 0;
@@ -55,7 +57,7 @@ public class ShootCommand extends Command {
         runOnceRotate = false;
       }
     }
-    if(shooter.onAngle && shooter.shooterMotorsOn) {
+    if(shooter.onAngle && shooter.shooterMotorsOn && shooter.noteIn) {
       System.out.println("YIPPPEEEEE");
       if(runOnceShoot) {
         info.intakeSpeed = preSetInfo.intakeSpeed;

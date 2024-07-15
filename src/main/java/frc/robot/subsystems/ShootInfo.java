@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
 public class ShootInfo {
-    public double encoderValue;
+    public double targetRotateEncoder;
     public double distance;
-    public double upperPower;
-    public double lowerPower;
-    public ShootPosition type;
-    public boolean auto;
+    public double upperShooterPower;
+    public double lowerShooterPower;
     public double angle;
     public double intakeSpeed;
     public double rotationSpeed;
@@ -252,20 +250,20 @@ public class ShootInfo {
         ,0.6243033333};
 
     private boolean isNew = true;
-    public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, double intakeSpeed, double rotationSpeed, ShootPosition type) {
+    public ShootInfo(double encoderValue, double distance, double upperPower, double lowerPower, double intakeSpeed, double rotationSpeed) {
         this.distance = distance;
-        this.upperPower = upperPower;
+        this.upperShooterPower = upperPower;
         this.rotationSpeed = rotationSpeed;
-        this.lowerPower = lowerPower;
-        this.type = type;
+        this.lowerShooterPower = lowerPower;
         this.intakeSpeed = intakeSpeed;
         if(encoderValue != -1) {
-            this.encoderValue = encoderValue;
+            this.targetRotateEncoder = encoderValue;
         }
         else if(distance > 0) {
-            this.encoderValue = getEncoderValue(distance);
+            this.targetRotateEncoder = getEncoderValue(distance);
         }
     }
+
 
     public double getEncoderValue(double distance) {
         
@@ -284,13 +282,13 @@ public class ShootInfo {
             }
             mid = left + (right - left) / 2;
         }
-        encoderValue = encoderValues[left] - Shooter.kLeftEncoderOffset; // eventually change to constant
-        System.out.println("ENCODER VALUE: " + encoderValue);
-        return encoderValue;
+        targetRotateEncoder = encoderValues[left] - Shooter.kLeftEncoderOffset; // eventually change to constant
+        System.out.println("ENCODER VALUE: " + targetRotateEncoder);
+        return targetRotateEncoder;
     }
 
     public ShootInfo copy() {
-        return new ShootInfo(encoderValue, distance, upperPower, lowerPower, intakeSpeed, rotationSpeed, type);
+        return new ShootInfo(targetRotateEncoder, distance, upperShooterPower, lowerShooterPower, intakeSpeed, rotationSpeed);
     }
 
     protected void setNew(boolean isNew) {
@@ -302,11 +300,10 @@ public class ShootInfo {
     }
 
     public boolean isEqual(ShootInfo other) {
-        return this.encoderValue == other.encoderValue && 
+        return this.targetRotateEncoder == other.targetRotateEncoder && 
         this.distance == other.distance &&
-        this.upperPower == other.upperPower &&
-        this.lowerPower == other.lowerPower && 
-        this.type.equals(other.type) && this.intakeSpeed == other.intakeSpeed;
+        this.upperShooterPower == other.upperShooterPower &&
+        this.lowerShooterPower == other.lowerShooterPower && this.intakeSpeed == other.intakeSpeed;
     }
 
 }
