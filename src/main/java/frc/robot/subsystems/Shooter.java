@@ -393,6 +393,12 @@ public class Shooter extends SubsystemBase {
   }
 
   public int setShootInfo(ShootInfo info) {
+    System.out.println("In setShootInfo");
+    System.out.print(info.intakeSpeed + " ");
+    System.out.print(info.upperShooterPower + " ");
+    System.out.print(info.lowerShooterPower + " ");
+    System.out.print(info.rotationSpeed + " ");
+    System.out.println(info.targetRotateEncoder);
     if(info.intakeSpeed != Double.MAX_VALUE) {
       currentShooterInfo.intakeSpeed = info.intakeSpeed;
     }
@@ -429,6 +435,13 @@ public class Shooter extends SubsystemBase {
   private void manageRotate() {
     currentEncoderValueLeft = getLeftRotateEncoder();
     currentEncoderValueRight = getRightRotateEncoder();
+    if (currentShooterInfo.targetRotateEncoder > (0.708 - 0.497)) {
+      currentShooterInfo.targetRotateEncoder = 0.708 - 0.497;
+    }
+    if (currentShooterInfo.targetRotateEncoder < 0) {
+      currentShooterInfo.targetRotateEncoder = 0;
+    }
+
     leftPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueLeft);
     rightPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueRight);
     if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
@@ -547,6 +560,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putBoolean("Shooter motors ready", shooterMotorsOn);
     SmartDashboard.putNumber("Intake speed", currentShooterInfo.intakeSpeed);
     SmartDashboard.putBoolean("Note flown", noteShot);
+    SmartDashboard.putBoolean("Note In", noteIn);
     //System.out.println(currentShooterInfo.intakeSpeed + " INTAKE SPEED");
 }
 
