@@ -71,9 +71,9 @@ public class Shooter extends SubsystemBase {
   double previousRotatePower = 0;
   boolean oneTime = true;
   final double kp = 3;
-  double previousIntakeSpeed = 0;
-  double previousUpperSpeed = 0;
-  double previousLowerSpeed = 0;
+  double previousIntakeSpeed = -1;
+  double previousUpperSpeed = -1;
+  double previousLowerSpeed = -1;
   int periodicCounter = 0;
   boolean intakeSpeedFinal = false;
   ShootInfo stop = new ShootInfo(0.0, 0.0, 0.0, 0.0, 0.0);
@@ -233,7 +233,7 @@ public class Shooter extends SubsystemBase {
   //     return Math.abs(power);
   //   }
   // }
-  public void setRotationSpeed(double leftPower, double rightPower, double encoderValue) {
+  public void setRotationSpeed(double leftPower, double rightPower) {
     
     // leftPower = changeDirection(encoderValue, currentEncoderValue, leftPower);
     // rightPower = changeDirection(encoderValue, currentEncoderValue, rightPower);
@@ -353,6 +353,12 @@ public class Shooter extends SubsystemBase {
   }
 
   public int setShootInfo(ShootInfo info) {
+    System.out.println("In setShootInfo");
+    System.out.print(info.intakeSpeed + " ");
+    System.out.print(info.upperShooterPower + " ");
+    System.out.print(info.lowerShooterPower + " ");
+    System.out.print(info.rotationSpeed + " ");
+    System.out.println(info.targetRotateEncoder);
     if(info.intakeSpeed != Double.MAX_VALUE) {
       currentShooterInfo.intakeSpeed = info.intakeSpeed;
     }
@@ -386,6 +392,13 @@ public class Shooter extends SubsystemBase {
   private void manageRotate() {
     currentEncoderValueLeft = getLeftRotateEncoder();
     currentEncoderValueRight = getRightRotateEncoder();
+    if (currentShooterInfo.targetRotateEncoder > (0.708 - 0.497)) {
+      currentShooterInfo.targetRotateEncoder = 0.708 - 0.497;
+    }
+    if (currentShooterInfo.targetRotateEncoder < 0) {
+      currentShooterInfo.targetRotateEncoder = 0;
+    }
+
     leftPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueLeft);
     rightPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueRight);
     if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
@@ -393,7 +406,10 @@ public class Shooter extends SubsystemBase {
       rightPower = 0;
       System.out.println("rotate encoder misaligned");
     }
-    setRotationSpeed(leftPower, rightPower, currentShooterInfo.targetRotateEncoder);
+
+    
+
+    setRotationSpeed(leftPower, rightPower);
   }
 
   private void manageFlags() {
@@ -495,15 +511,14 @@ public class Shooter extends SubsystemBase {
     //System.out.println("Worked");
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("left throughbore position", currentEncoderValueLeft);
-    SmartDashboard.putNumber("Current Left Throughbore", leftRotateThroughbore.getPosition());
     SmartDashboard.putNumber("left throughbore velocity", leftRotateThroughbore.getVelocity());
-    SmartDashboard.putNumber("right throughbore position", rightRotateThroughbore.getPosition());
     SmartDashboard.putNumber("right throughbore velocity", rightRotateThroughbore.getVelocity());
     SmartDashboard.putNumber("Target left Encoder", currentShooterInfo.targetRotateEncoder);
     SmartDashboard.putBoolean("On angle", onAngle);
     SmartDashboard.putBoolean("Shooter motors ready", shooterMotorsOn);
     SmartDashboard.putNumber("Intake speed", currentShooterInfo.intakeSpeed);
     SmartDashboard.putBoolean("Note flown", noteShot);
+    SmartDashboard.putBoolean("Note In", noteIn);
     //System.out.println(currentShooterInfo.intakeSpeed + " INTAKE SPEED");
 }
 

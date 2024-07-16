@@ -63,7 +63,7 @@ public class RobotContainer {
     m_driverController.rightTrigger().onTrue((amp));
     m_driverController.rightTrigger().onFalse(new Cancel(amp));
     // .709 subwoof shot || .525 Ferry shot
-    ShootCommand subwoof = new ShootCommand(ShootPosition.NORMAL);
+    ShootCommand subwoof = new ShootCommand(ShootPosition.SUBWOOFER);
     m_driverController.rightBumper().onTrue((subwoof));
     m_driverController.rightBumper().onFalse(new Cancel(subwoof));
     
