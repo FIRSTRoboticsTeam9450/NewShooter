@@ -37,7 +37,7 @@ public class SetAngleCommand extends Command {
     public void execute() {
         if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
             info = new ShootInfo(InfoParams.IGNORE);
-            info.intakeSpeed = 0.3;
+            info.intakeSpeed = 0.7;
       
             shooter.setShootInfo(info);
       
@@ -47,27 +47,32 @@ public class SetAngleCommand extends Command {
 
     //prepare the shooter motors for the shot
     public void prepareShot() {
+        runOnceShoot = true;
         info = new ShootInfo(InfoParams.IGNORE);
-        double targetRotateEncoderAuto = getEncoderValue(50);
+        double targetRotateEncoderAuto = getEncoderValue(133);
         System.out.println(targetRotateEncoderAuto);
         SmartDashboard.putNumber("Auto generated target encoder", targetRotateEncoderAuto);
         //shot type:
         switch (shotType) {
         case AMP:
-            info.lowerShooterPower = 0.2;
-            info.upperShooterPower = 0.2;
-            info.targetRotateEncoder = 0.1;
+            info.lowerShooterPower = 0.1;
+            info.upperShooterPower = 0.25;
+            info.targetRotateEncoder = 0.0002;
             break;
-
-        case SUBWOOFER:
-            info.lowerShooterPower = 0.6;
-            info.upperShooterPower = 0.6;
-            info.targetRotateEncoder = 0.708 - 0.497;
+            // 3/8 inch = .01 encoder  
+        case SUBWOOFER: // mechanical max: left: .71/.2108 right:.705/.2108 || mechanical min: left .499/.000 right: .494/-.000
+            info.lowerShooterPower = 1;
+            info.upperShooterPower = 1;
+            info.targetRotateEncoder = 0.21;
             break;
         case AUTO:
             info.lowerShooterPower = 1;
             info.upperShooterPower = 1;
-            info.targetRotateEncoder = .1;
+            info.targetRotateEncoder = .1786;
+        case FERRY:
+            info.lowerShooterPower = 1;
+            info.upperShooterPower = 1;
+            info.targetRotateEncoder = .026;
 
             // if(targetRotateEncoderAuto < .21 && targetRotateEncoderAuto > 0) {
             //     info.targetRotateEncoder = targetRotateEncoderAuto;
@@ -84,20 +89,22 @@ public class SetAngleCommand extends Command {
 
     public double getEncoderValue(double distance) {
         
-        angle = Math.asin((80/Math.sqrt(Math.pow(distance, 2) + Math.pow(80, 2))));
+        angle = Math.asin((80/Math.sqrt(Math.pow(distance+3, 2) + Math.pow(80, 2))));
+        angle *= (180/3.14);
+        System.out.println("ANGLE:::" + angle);
         double targetRotateEncoder = 0;
         int mid = angleValues.length/2;
         int left = 0;
         int right = angleValues.length-1;
-        while(left < right) {
+        while(right - left != 1) {
 
-            if(angleValues[mid] < angle) {
+            if(angleValues[mid] > angle) {
                 left = mid;
             }
             else {
                 right = mid;
             }
-            mid = left + (right - left) / 2;
+            mid = left + ((right - left) / 2);
         }
         targetRotateEncoder = encoderValues[left] - .497; // eventually change to constant
         System.out.println("ENCODER VALUE: " + targetRotateEncoder);
@@ -112,7 +119,8 @@ public class SetAngleCommand extends Command {
     
     @Override
     public boolean isFinished() {
-        return !shooter.noteIn;
+        return false;
+        //return !shooter.noteIn;
     }
 
     double[] angleValues = {50.59359786
