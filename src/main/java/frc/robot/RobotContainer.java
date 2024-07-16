@@ -10,6 +10,7 @@ import frc.robot.commands.Cancel;
 import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TimeStampCommand;
@@ -59,13 +60,17 @@ public class RobotContainer {
     //double distance = SmartDashboard.getNumber("Distance:", 0);
     // m_driverController.
 
-    ShootCommand amp = new ShootCommand(ShootPosition.AMP);
-    m_driverController.rightTrigger().onTrue((amp));
-    m_driverController.rightTrigger().onFalse(new Cancel(amp));
-    // .709 subwoof shot || .525 Ferry shot
-    ShootCommand subwoof = new ShootCommand(ShootPosition.NORMAL);
-    m_driverController.rightBumper().onTrue((subwoof));
-    m_driverController.rightBumper().onFalse(new Cancel(subwoof));
+    SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
+    m_driverController.rightTrigger().onTrue(auto);
+    m_driverController.rightTrigger().onFalse(new Cancel(auto));
+    
+    // ShootCommand amp = new ShootCommand(ShootPosition.AMP);
+    // m_driverController.rightTrigger().onTrue((amp));
+    // m_driverController.rightTrigger().onFalse(new Cancel(amp));
+    // // .709 subwoof shot || .525 Ferry shot
+    // ShootCommand subwoof = new ShootCommand(ShootPosition.NORMAL);
+    // m_driverController.rightBumper().onTrue((subwoof));
+    // m_driverController.rightBumper().onFalse(new Cancel(subwoof));
     
     // ShootCommand ferryShot = new ShootCommand(ShootPosition.NORMAL, new ShootInfo(.028, 0, 1, 1, -.7, 0.6, ShootPosition.NORMAL));
     // m_driverController.povCenter().onTrue((ferryShot));
@@ -88,10 +93,10 @@ public class RobotContainer {
     m_driverController.povUp().onTrue(straight);
     m_driverController.povUp().onFalse(new Cancel(straight));
     
-    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
+    //ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
     //Command cancel = new Cancel(intake);
-    m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
-    m_driverController.a().onFalse(new Cancel(intake));//new SetAngleCommand(-0.05, 0, 0.5));
+    // m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
+    // m_driverController.a().onFalse(new Cancel(intake));//new SetAngleCommand(-0.05, 0, 0.5));
     
     //m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
     //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));

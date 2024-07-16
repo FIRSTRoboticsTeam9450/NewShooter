@@ -254,6 +254,16 @@ public class ShootInfo {
         ,0.6243033333};
 
     private boolean isNew = true;
+
+    public ShootInfo(InfoParams ip) { // Always Ignore 
+        this(Double.MAX_VALUE);
+    }
+
+    public ShootInfo(InfoParams ip_rotateTarget, double rotationSpeed, double upperPower, double lowerPower, double intakeSpeed) {
+        this(((ip_rotateTarget.equals(InfoParams.IGNORE)) ? Double.MAX_VALUE : Double.MIN_VALUE), rotationSpeed, upperPower, lowerPower,intakeSpeed);
+        
+    }
+
     public ShootInfo(double encoderValue, double rotationSpeed, double upperPower, double lowerPower, double intakeSpeed) {
         this.upperShooterPower = upperPower;
         this.rotationSpeed = rotationSpeed;
