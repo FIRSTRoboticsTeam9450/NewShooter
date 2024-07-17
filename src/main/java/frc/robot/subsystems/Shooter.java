@@ -25,15 +25,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  CANSparkFlex intakeMotor = new CANSparkFlex(32, MotorType.kBrushless);
-  CANSparkFlex upperShooterMotor = new CANSparkFlex(30, MotorType.kBrushless);
-  CANSparkFlex lowerShooterMotor = new CANSparkFlex(31, MotorType.kBrushless);
-  CANSparkMax leftRotateMotor = new CANSparkMax(28, MotorType.kBrushless);
-  CANSparkMax rightRotateMotor = new CANSparkMax(29, MotorType.kBrushless);
-  RelativeEncoder upperEncoder = upperShooterMotor.getEncoder();
-  RelativeEncoder lowerEncoder = lowerShooterMotor.getEncoder();
-  SparkAbsoluteEncoder leftRotateThroughbore = leftRotateMotor.getAbsoluteEncoder();
-  SparkAbsoluteEncoder rightRotateThroughbore = rightRotateMotor.getAbsoluteEncoder();
+  CANSparkFlex motorIntake = new CANSparkFlex(32, MotorType.kBrushless);
+  CANSparkFlex motorShooterUpper = new CANSparkFlex(30, MotorType.kBrushless);
+  CANSparkFlex motorShooterLower = new CANSparkFlex(31, MotorType.kBrushless);
+  CANSparkMax motorRotateLeft = new CANSparkMax(28, MotorType.kBrushless);
+  CANSparkMax motorRotateRight = new CANSparkMax(29, MotorType.kBrushless);
+  RelativeEncoder encoderShooterUpper = motorShooterUpper.getEncoder();
+  RelativeEncoder encoderShooterLower = motorShooterLower.getEncoder();
+  SparkAbsoluteEncoder throughboreRotateLeft = motorRotateLeft.getAbsoluteEncoder();
+  SparkAbsoluteEncoder throughboreRotateRight = motorRotateRight.getAbsoluteEncoder();
 
   private LaserCan laser;
   private LaserCan.Measurement measurement; 
@@ -43,21 +43,18 @@ public class Shooter extends SubsystemBase {
 
   private static Shooter shooter;
   Timer timer = new Timer();
-  boolean started = false;
   boolean intakeOn = false;
   public boolean noteIn = false;
   public boolean noteShot = false;
   double normalUpper = 0;
   double normalLower = 0;
-  double upperEncoderValue = 0;
-  double lowerEncoderValue = 0;
+  double encoderValueUpper = 0;
+  double encoderValueLower = 0;
   //double powerMult = 1;
-  double leftPower;
-  double rightPower;
-  double upperPower;
-  double lowerPower;
-  double previousUpper = 0;
-  double previousLower = 0;
+  double rotateLeftPower;
+  double rotateRightPower;
+  double encoderUpperPrevious = 0;
+  double encoderLowerPrevious = 0;
   public boolean shooterMotorsOn = false;
   public boolean onAngle = false;
   public boolean checkRight = false;
@@ -88,28 +85,28 @@ public class Shooter extends SubsystemBase {
     return shooter;
   }
   public Shooter() {
-    upperShooterMotor.restoreFactoryDefaults();
-    lowerShooterMotor.restoreFactoryDefaults();
+    motorShooterUpper.restoreFactoryDefaults();
+    motorShooterLower.restoreFactoryDefaults();
 
-    leftRotateMotor.restoreFactoryDefaults();
-    rightRotateMotor.restoreFactoryDefaults();
+    motorRotateLeft.restoreFactoryDefaults();
+    motorRotateRight.restoreFactoryDefaults();
 
-    intakeMotor.restoreFactoryDefaults();
-    intakeMotor.setInverted(true);
+    motorIntake.restoreFactoryDefaults();
+    motorIntake.setInverted(true);
 
-    upperShooterMotor.setInverted(false);
-    lowerShooterMotor.setInverted(true);
+    motorShooterUpper.setInverted(false);
+    motorShooterLower.setInverted(true);
 
-    leftRotateMotor.setInverted(true);
-    rightRotateMotor.setInverted(false);
+    motorRotateLeft.setInverted(true);
+    motorRotateRight.setInverted(false);
     // leftRotateMotor.setIdleMode(IdleMode.kCoast);
     // rightRotateMotor.setIdleMode(IdleMode.kCoast);
 
-    upperShooterMotor.setIdleMode(IdleMode.kCoast);
-    lowerShooterMotor.setIdleMode(IdleMode.kCoast);
+    motorShooterUpper.setIdleMode(IdleMode.kCoast);
+    motorShooterLower.setIdleMode(IdleMode.kCoast);
 
-    leftRotateMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    rightRotateMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    motorRotateLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    motorRotateRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
     //stop();
     setShootInfo(currentShooterInfo);
@@ -123,30 +120,14 @@ public class Shooter extends SubsystemBase {
     }
     measurement = laser.getMeasurement();
   }
-
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  // public Command cancel() {
-  //   // Inline construction of command goes here.
-  //   // Subsystem::RunOnce implicitly requires `this` subsystem.
-  //   return runOnce(
-  //       () -> {
-  //         this.cancel();
-  //         /* one-time action goes here */
-  //       });
-  // }
   
   public void initializeShoot() {
-    started = false;
     intakeOn = false;
     noteIn = false;
     normalUpper = 0;
     normalLower = 0;
-    previousLower = 0;
-    previousUpper = 0;
+    encoderLowerPrevious = 0;
+    encoderUpperPrevious = 0;
     onAngle = false;
     checkRight = false;
     shooterMotorsOn = false;
@@ -160,24 +141,11 @@ public class Shooter extends SubsystemBase {
 
 
   public boolean checkShooterMotors(double upperPower, double lowerPower) {
-    SmartDashboard.putNumber("Upper encoder", upperEncoderValue);
-    SmartDashboard.putNumber("Lower encoder", lowerEncoderValue);
 
-    // switch(type) {
-    //   case AMP:
-    //     upperPower = .1;
-    //     lowerPower = .25;
-    //     break;
-    //   case NORMAL:
-    //     upperPower = 1;
-    //     lowerPower = 1;
-    //     break;
-      
-    // }
     if(upperPower != 0 && lowerPower != 0) {
-      normalUpper = upperEncoderValue;
-      normalLower = lowerEncoderValue;
-      if(Math.abs(previousLower - lowerEncoderValue) < 1 && Math.abs(previousUpper - upperEncoderValue) < 1) {
+      normalUpper = encoderValueUpper;
+      normalLower = encoderValueLower;
+      if(Math.abs(encoderLowerPrevious - encoderValueLower) < 1 && Math.abs(encoderUpperPrevious - encoderValueUpper) < 1) {
         count++;
         if(count >= 3) {
           return true;
@@ -186,67 +154,22 @@ public class Shooter extends SubsystemBase {
       else {
         count = 0;
       }
-      previousLower = lowerEncoderValue;
-      previousUpper = upperEncoderValue;
+      encoderLowerPrevious = encoderValueLower;
+      encoderUpperPrevious = encoderValueUpper;
     }
 
-    // if(!started) {
-    //   timer.reset();
-    //   timer.start();
-    //   started = true;
-    // }
-    // if(intakeOn) {
-    //   if(upperEncoder.getVelocity() - normalUpper < -600 || lowerEncoder.getVelocity() - normalLower < -600) {
-    //     noteIn = true;
-    //   }
-
-    //   if(noteIn) {
-    //     if(upperEncoder.getVelocity() >= normalUpper || lowerEncoder.getVelocity() >= normalUpper) {
-    //       return true;
-    //     }
-    //   }
-    // }
-    // if(timer.hasElapsed(1)) {
-    //   timer.stop();
-    //   intakeOn = true;
-    // }
     return false;
   }
 
-  public boolean startIntake(double power) {
-  
-    // if(upperEncoderValue - normalUpper < -600 || lowerEncoderValue - normalLower < -600) {
-    //   noteIn = true;
-    // }
-
-    // if(noteIn) {
-    //   if(upperEncoderValue >= normalUpper || lowerEncoderValue >= normalUpper) {
-    //       return true;
-    //   }
-    // }
-    return false;
-  }
   public void setShooterMotorSpeed(double upper, double lower) {
-    upperShooterMotor.set(upper);
-    lowerShooterMotor.set(lower);
+    motorShooterUpper.set(upper);
+    motorShooterLower.set(lower);
   }
 
-    
-  // public double changeDirection(double encoderValue, double currentValue, double power) {
-  //   if(encoderValue > currentValue) {
-  //     return -Math.abs(power);
-  //   }
-  //   else{
-  //     return Math.abs(power);
-  //   }
-  // }
   public void setRotationSpeed(double leftPower, double rightPower) {
     
-    // leftPower = changeDirection(encoderValue, currentEncoderValue, leftPower);
-    // rightPower = changeDirection(encoderValue, currentEncoderValue, rightPower);
-    //System.out.println("Power:" + leftPower);
-    leftRotateMotor.set(leftPower);
-    rightRotateMotor.set(rightPower);
+    motorRotateLeft.set(leftPower);
+    motorRotateRight.set(rightPower);
 
     SmartDashboard.putNumber("rotate speed", leftPower);
 
@@ -257,7 +180,16 @@ public class Shooter extends SubsystemBase {
   double count2 = 0;
   public double rotate(double targetEncoderValue, double currentEncoderValue) {
     double error = (targetEncoderValue - currentEncoderValue);
-    double power = (targetEncoderValue - currentEncoderValue) * kp + boost;
+    double power = error * kp + boost;
+
+    if(!onAngle) {
+      if(power > 0 && power < .05) {
+        power = .05;
+      }
+      else if(power < 0 && power > -.05) {
+        power = -.05;
+      }
+    }
 
     if(power > .1) {
       boost = .05;
@@ -278,13 +210,6 @@ public class Shooter extends SubsystemBase {
     else{
       power = Math.max(kMaxRotateSpeedDown, power); // Limiting power when going down
     }
-    // if(power > 0 && currentEncoderValue < .1) {
-    //   if (count2%25 == 0){
-    //     System.out.println("Boosted: " + count2+ " Power " + power + " Encoder: " + currentEncoderValue);
-    //   }
-    //   count2++;
-    //   boost = .1;
-    // }
     if(Math.abs(power) > .1) {
       if(Math.signum(previousRotatePower) != Math.signum(power)) {
         previousRotatePower = 0;
@@ -296,61 +221,13 @@ public class Shooter extends SubsystemBase {
         power = previousRotatePower - .002;
       }
     }
-    // if(Math.abs(power) < .05) {
-    //   if(power < 0) {
-    //     power = -.05;
-    //   }
-    //   else {
-    //     power = .05;
-    //   }
-    // }
     previousRotatePower = power;
     previousEncoder = currentEncoderValue;
     return power;
   }
 
-  // public boolean rotateTil(double encoderValue, double currentValue) {
-    
-  //   if(Math.abs(encoderValue - currentValue) < .014) {
-  //     shooter.setRotationSpeed(0, 0, currentValue);
-  //     checkRight = true;
-  //     System.out.println("GOT HERE" + encoderValue + ":" + currentValue);
-  //   }
-    // else if(currentShooterInfo.rotationSpeed < 0 && encoderValue > currentValue) {
-    //   shooter.setRotationSpeed(0, 0, currentValue);
-    //   checkRight = true;
-    //   System.out.println("GOT HERE it was greater"+ encoderValue + ":" + currentValue);
-    // } 
-    // else if(currentShooterInfo.rotationSpeed > 0 && encoderValue < currentValue) {
-    //   shooter.setRotationSpeed(0, 0, currentValue);
-    //   checkRight = true;
-    //   System.out.println("GOT HERE less than"+ encoderValue + ":" + currentValue);
-    // }
-    // return checkRight;
-    // currentValue = rightRotateThroughbore.getPosition();
-    // if(checkRight) {
-    //   if(Math.abs(encoderValue - currentValue) < .001) {
-    //     shooter.setRotationSpeed(0, 0, rightRotateThroughbore.getPosition());
-    //     System.out.println("GOT HERE 2X");
-    //     return true;
-    //   }
-    //   else if(currentShooterInfo.rotationSpeed < 0 && encoderValue > rightRotateThroughbore.getPosition()) {
-    //     shooter.setRotationSpeed(0, 0, rightRotateThroughbore.getPosition());
-    //     System.out.println("GOT HERE 2X");
-    //     return true;
-    //   } 
-    //   else if(currentShooterInfo.rotationSpeed > 0 && encoderValue < leftRotateThroughbore.getPosition()) {
-    //     shooter.setRotationSpeed(0, 0, rightRotateThroughbore.getPosition());
-    //     System.out.println("GOT HERE 2X");
-    //     return true;
-    //   }
-    //   System.out.println(currentShooterInfo.encoderValue + " PLEASEEEEEEEEEEEEEEE " + leftRotateThroughbore.getPosition());
-    // }
-    //System.out.println("Worked");
-    // return false;
-  // }
   public void setIntakeSpeed(double power) {
-    intakeMotor.set(power);
+    motorIntake.set(power);
   }
 
   public void resetMotors() {
@@ -385,11 +262,11 @@ public class Shooter extends SubsystemBase {
   // zero basing encoders left encoder has .497 offset, right has ?
 
   public double getLeftRotateEncoder() {
-    return leftRotateThroughbore.getPosition() - kLeftEncoderOffset;
+    return throughboreRotateLeft.getPosition() - kLeftEncoderOffset;
   }
 
   public double getRightRotateEncoder() {
-    return rightRotateThroughbore.getPosition() - kRightEncoderOffset;
+    return throughboreRotateRight.getPosition() - kRightEncoderOffset;
   }
 
   public int setShootInfo(ShootInfo info) {
@@ -421,10 +298,6 @@ public class Shooter extends SubsystemBase {
     currentShooterInfo.setNew(true);
     manageFlags();
 
-    // }
-    // else {
-    //   System.out.println("Already going \n type:" + info.type);
-    // }
     return periodicCounter;
   }
 
@@ -442,14 +315,14 @@ public class Shooter extends SubsystemBase {
       currentShooterInfo.targetRotateEncoder = 0;
     }
 
-    leftPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueLeft);
-    rightPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueRight);
+    rotateLeftPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueLeft);
+    rotateRightPower = rotate(currentShooterInfo.targetRotateEncoder, currentEncoderValueRight);
     if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
-      leftPower = 0;
-      rightPower = 0;
+      rotateLeftPower = 0;
+      rotateRightPower = 0;
       System.out.println("rotate encoder misaligned");
     }
-    setRotationSpeed(leftPower, rightPower);
+    setRotationSpeed(rotateLeftPower, rotateRightPower);
   }
 
   private void manageFlags() {
@@ -457,10 +330,16 @@ public class Shooter extends SubsystemBase {
     if(Math.abs(currentShooterInfo.targetRotateEncoder - currentEncoderValueLeft) < .001) {
       onAngle = true;
     }
+    else if(currentEncoderValueLeft > currentShooterInfo.targetRotateEncoder && previousEncoder < currentShooterInfo.targetRotateEncoder) {
+      onAngle = true;
+    }
+    else if(currentEncoderValueLeft < currentShooterInfo.targetRotateEncoder && previousEncoder > currentShooterInfo.targetRotateEncoder) {
+      onAngle = true;
+    }
     else {
       onAngle = false;
     }
-    
+    previousEncoder = currentEncoderValueLeft;
     if(currentShooterInfo.upperShooterPower == 0) {
       shooterMotorsOn = false;
     }
@@ -485,8 +364,8 @@ public class Shooter extends SubsystemBase {
 
     manageRotate();
 
-    lowerEncoderValue = lowerEncoder.getVelocity();
-    upperEncoderValue = upperEncoder.getVelocity();
+    encoderValueLower = encoderShooterLower.getVelocity();
+    encoderValueUpper = encoderShooterUpper.getVelocity();
     if(previousUpperSpeed != currentShooterInfo.upperShooterPower || previousLowerSpeed != currentShooterInfo.lowerShooterPower) {
       setShooterMotorSpeed(currentShooterInfo.upperShooterPower, currentShooterInfo.lowerShooterPower);
       previousUpperSpeed = currentShooterInfo.upperShooterPower;
@@ -500,57 +379,6 @@ public class Shooter extends SubsystemBase {
 
     manageFlags();
     periodicCounter++;
-    //System.out.println(currentShooterInfo.intakeSpeed + "_____________ INTAKE SPEED");
-    
-
-    //onAngle = rotateTil(currentShooterInfo.encoderValue, currentEncoderValue);
-    //System.out.println("ON ANGLE:"+onAngle);
-    
-    
-    // else {
-    //   if(currentShooterInfo.isNew()) {
-    //     setIntakeSpeed(currentShooterInfo.intakeSpeed);
-    //     setShooterMotorSpeed(currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
-    //     //setRotationSpeed(currentShooterInfo.rotationSpeed, currentShooterInfo.rotationSpeed, currentShooterInfo.encoderValue);
-    //     currentShooterInfo.setNew(false);
-    //   }
-    // }
-
-    
-    // if(!currentShooterInfo.type.equals(ShootPosition.STOP)){
-    //   System.out.println("worked");
-    //     setRotationSpeed(-.05, currentShooterInfo.encoderValue);
-    //     initializeShoot();
-        
-        
-    //     currentShooterInfo.setNew(false);
-    // }
-
-    // if(!currentShooterInfo.type.equals(ShootPosition.INTAKE)) {
-    //   if(!shooterMotorsOn) {
-    //       runShooterMotors(currentShooterInfo.type, currentShooterInfo.upperPower, currentShooterInfo.lowerPower);
-          
-    //       onAngle = rotateTil(currentShooterInfo.encoderValue);
-    //       if(onAngle) { // && shooterMotorsOn
-    //         if(startIntake()) {
-    //             resetMotors();
-    //             currentShooterInfo = stop.copy();
-    //             System.out.println("yippee");
-    //         }
-    //       }
-    //     }
-    // }
-    // else {
-    //   if(onAngle) { // && shooterMotorsOn
-    //     if(startIntake()) {
-    //         resetMotors();
-    //         currentShooterInfo = stop.copy();
-    //         System.out.println("yippee");
-    //     }
-    //   }
-    // }
-
-    //System.out.println("Worked");
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("left throughbore position", currentEncoderValueLeft);
     //SmartDashboard.putNumber("Current Left Throughbore", leftRotateThroughbore.getPosition());
@@ -561,6 +389,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Intake speed", currentShooterInfo.intakeSpeed);
     SmartDashboard.putBoolean("Note flown", noteShot);
     SmartDashboard.putBoolean("Note In", noteIn);
+    SmartDashboard.putNumber("Upper encoder", encoderValueUpper);
+    SmartDashboard.putNumber("Lower encoder", encoderValueLower);
     //System.out.println(currentShooterInfo.intakeSpeed + " INTAKE SPEED");
 }
 
