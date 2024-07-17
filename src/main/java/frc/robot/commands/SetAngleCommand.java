@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Dictionary;
 import java.util.Scanner;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.InfoParams;
@@ -37,7 +38,7 @@ public class SetAngleCommand extends Command {
     public void execute() {
         if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
             info = new ShootInfo(InfoParams.IGNORE);
-            info.intakeSpeed = 0.4;
+            info.intakeSpeed = 0.55;
       
             shooter.setShootInfo(info);
       
@@ -49,7 +50,7 @@ public class SetAngleCommand extends Command {
     public void prepareShot() {
         runOnceShoot = true;
         info = new ShootInfo(InfoParams.IGNORE);
-        double targetRotateEncoderAuto = getEncoderValue(133);
+        double targetRotateEncoderAuto = getEncoderValue(82);
         System.out.println(targetRotateEncoderAuto);
         SmartDashboard.putNumber("Auto generated target encoder", targetRotateEncoderAuto);
         //shot type:
@@ -57,7 +58,7 @@ public class SetAngleCommand extends Command {
         case AMP:
             info.lowerShooterPower = 0.1;
             info.upperShooterPower = 0.25;
-            info.targetRotateEncoder = 0.0002;
+            info.targetRotateEncoder = .21;
             break;
             // 3/8 inch = .01 encoder  
         case SUBWOOFER: // mechanical max: left: .71/.2108 right:.705/.2108 || mechanical min: left .499/.000 right: .494/-.000
@@ -68,11 +69,13 @@ public class SetAngleCommand extends Command {
         case AUTO:
             info.lowerShooterPower = 1;
             info.upperShooterPower = 1;
-            info.targetRotateEncoder = .1786;
+            info.targetRotateEncoder = targetRotateEncoderAuto;
+            break;
         case FERRY:
             info.lowerShooterPower = 1;
             info.upperShooterPower = 1;
             info.targetRotateEncoder = .026;
+            break;
 
             // if(targetRotateEncoderAuto < .21 && targetRotateEncoderAuto > 0) {
             //     info.targetRotateEncoder = targetRotateEncoderAuto;
@@ -84,6 +87,7 @@ public class SetAngleCommand extends Command {
             info.lowerShooterPower = -0.1;
             info.upperShooterPower = -0.1;
             info.targetRotateEncoder = 0.0002;
+            break;
 
         default:
         }
@@ -115,23 +119,33 @@ public class SetAngleCommand extends Command {
         System.out.println("ENCODER VALUE: " + targetRotateEncoder);
         return targetRotateEncoder;
     }
-
     @Override
     public void end(boolean interrupted) {
-        shooter.stop();
+        if(!shotType.equals(ShootPosition.INTAKE)) {
+            Timer timer = new Timer();
+            timer.start();
+            while(!timer.hasElapsed(1)) {
+            }
+            shooter.stop();
+            timer.stop();
+            timer.reset();
+        }
+        else {
+            shooter.stop();
+        }
 
     }
     
     @Override
     public boolean isFinished() {
-        // switch (shotType) {
-        // case INTAKE:
-        //     return shooter.noteIn;
+        switch (shotType) {
+        case INTAKE:
+            return shooter.noteIn;
             
-        // default:
-        //     return !shooter.noteIn;
-        // }
-        return false;
+        default:
+            return !shooter.noteIn;
+        }
+        //return false;
     }
 
     double[] angleValues = {50.59359786

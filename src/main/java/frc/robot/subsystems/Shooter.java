@@ -379,6 +379,7 @@ public class Shooter extends SubsystemBase {
 
     manageFlags();
     periodicCounter++;
+    SmartDashboard.putBoolean("Note in", noteIn);
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("left throughbore position", currentEncoderValueLeft);
     //SmartDashboard.putNumber("Current Left Throughbore", leftRotateThroughbore.getPosition());

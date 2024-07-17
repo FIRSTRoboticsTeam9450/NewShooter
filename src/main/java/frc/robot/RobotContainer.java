@@ -110,8 +110,8 @@ public class RobotContainer {
 
     
     SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
-    m_driverController.b().onTrue(auto);
-    m_driverController.b().onFalse(new Cancel(auto));
+    m_driverController.povDown().onTrue(auto);
+    m_driverController.povDown().onFalse(new Cancel(auto));
     
     SetAngleCommand amp = new SetAngleCommand(ShootPosition.AMP);
     m_driverController.rightTrigger().onTrue((amp));
