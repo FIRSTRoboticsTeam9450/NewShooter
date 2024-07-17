@@ -182,15 +182,6 @@ public class Shooter extends SubsystemBase {
     double error = (targetEncoderValue - currentEncoderValue);
     double power = error * kp + boost;
 
-    if(!onAngle) {
-      if(power > 0 && power < .05) {
-        power = .05;
-      }
-      else if(power < 0 && power > -.05) {
-        power = -.05;
-      }
-    }
-
     if(power > .1) {
       boost = .05;
     }
