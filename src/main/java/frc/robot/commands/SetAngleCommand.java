@@ -80,6 +80,11 @@ public class SetAngleCommand extends Command {
             // else{
             //     info.targetRotateEncoder = .1;
             // }
+        case INTAKE:
+            info.lowerShooterPower = -0.1;
+            info.upperShooterPower = -0.1;
+            info.targetRotateEncoder = 0.0002;
+
         default:
         }
         
@@ -119,8 +124,13 @@ public class SetAngleCommand extends Command {
     
     @Override
     public boolean isFinished() {
-        return false;
-        //return !shooter.noteIn;
+        switch (shotType) {
+        case INTAKE:
+            return shooter.noteIn;
+            
+        default:
+            return !shooter.noteIn;
+        }
     }
 
     double[] angleValues = {50.59359786

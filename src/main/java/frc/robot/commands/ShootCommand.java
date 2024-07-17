@@ -81,6 +81,11 @@ public class ShootCommand extends Command {
             info.upperShooterPower = 1;
             info.targetRotateEncoder = 0.21;
             break;
+        
+        case INTAKE:
+            info.lowerShooterPower = -0.1;
+            info.upperShooterPower = -0.1;
+            info.targetRotateEncoder = 0.0002;
 
         default:
         }
@@ -125,7 +130,6 @@ public class ShootCommand extends Command {
     public boolean isFinished() {
         switch (shotType) {
         case INTAKE:
-            
             return shooter.noteIn;
         
         default:
