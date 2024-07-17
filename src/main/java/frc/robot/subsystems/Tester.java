@@ -53,7 +53,7 @@ public class Tester extends SubsystemBase{
     }
 
     public void makeItMove(double rotate) {
-        shooter.setShootInfo(new ShootInfo(rotate, limiters[Motors.valueOf(getName())3].value,limiters[2].value,limiters[1].value,limiters[0].value));
+        //shooter.setShootInfo(new ShootInfo(rotate, limiters[Motors.valueOf(getName())3].value,limiters[2].value,limiters[1].value,limiters[0].value));
     }
 }
 

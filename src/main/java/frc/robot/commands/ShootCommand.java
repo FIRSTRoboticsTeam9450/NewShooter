@@ -74,7 +74,7 @@ public class ShootCommand extends Command {
         case FERRY:
             info.lowerShooterPower = 1;
             info.upperShooterPower = 1;
-            info.targetRotateEncoder = .026;
+            info.targetRotateEncoder = targetRotateEncoderAuto;
 
             // if(targetRotateEncoderAuto < .21 && targetRotateEncoderAuto > 0) {
             //     info.targetRotateEncoder = targetRotateEncoderAuto;
