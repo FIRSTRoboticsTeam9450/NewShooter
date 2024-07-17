@@ -37,7 +37,7 @@ public class SetAngleCommand extends Command {
     public void execute() {
         if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
             info = new ShootInfo(InfoParams.IGNORE);
-            info.intakeSpeed = 0.7;
+            info.intakeSpeed = 0.4;
       
             shooter.setShootInfo(info);
       
@@ -124,13 +124,14 @@ public class SetAngleCommand extends Command {
     
     @Override
     public boolean isFinished() {
-        switch (shotType) {
-        case INTAKE:
-            return shooter.noteIn;
+        // switch (shotType) {
+        // case INTAKE:
+        //     return shooter.noteIn;
             
-        default:
-            return !shooter.noteIn;
-        }
+        // default:
+        //     return !shooter.noteIn;
+        // }
+        return false;
     }
 
     double[] angleValues = {50.59359786
