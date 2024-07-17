@@ -63,6 +63,7 @@ public class RobotContainer {
     //double distance = SmartDashboard.getNumber("Distance:", 0);
     // m_driverController.
 
+    
     SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
     m_driverController.b().onTrue(auto);
     m_driverController.b().onFalse(new Cancel(auto));
@@ -79,7 +80,8 @@ public class RobotContainer {
     m_driverController.x().onTrue((ferryShot));
     m_driverController.x().onFalse(new Cancel(ferryShot));
     // m_driverController.povDown().onTrue(distance++);
-  
+    
+
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
     // m_driverController.povRight().onTrue(up);
     // m_driverController.povRight().onFalse(new Cancel(up));
@@ -107,8 +109,13 @@ public class RobotContainer {
     //m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.2));
     //m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.2));
 
-    m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.3));
-    m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.3));
+    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
+    m_driverController.leftTrigger().onTrue((intake));
+    m_driverController.leftTrigger().onFalse(new Cancel(intake));
+
+
+    //m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.3));
+    //m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.3));
 
     //m_driverController.b().whileTrue(new TimeStampCommand(shooter));
 

@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase {
   final double kMaxEncoderDifference = .02;
   double previousRotatePower = 0;
   boolean oneTime = true;
-  final double kp = 5;
+  final double kp = 3;
   double previousIntakeSpeed = 0;
   double previousUpperSpeed = 0;
   double previousLowerSpeed = 0;

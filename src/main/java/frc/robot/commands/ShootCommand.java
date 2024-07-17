@@ -34,14 +34,28 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
-            info = new ShootInfo(Double.MAX_VALUE);
-            info.intakeSpeed = -0.3;
+        switch (shotType) {
+            case INTAKE:
+                if (shooter.onAngle && runOnceShoot) {
+                    info = new ShootInfo(Double.MAX_VALUE);
+                    info.intakeSpeed = 0.3;
+
+                    shooter.setShootInfo(info);
+
+                    this.runOnceShoot = false;
+                }
+            default:
+                 if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
+                    info = new ShootInfo(Double.MAX_VALUE);
+                    info.intakeSpeed = 0.3;
       
-            shooter.setShootInfo(info);
+                    shooter.setShootInfo(info);
       
-            this.runOnceShoot = false;
+                    this.runOnceShoot = false;
+                }
         }
+
+       
     }
 
     //prepare the shooter motors for the shot
@@ -62,6 +76,10 @@ public class ShootCommand extends Command {
             info.targetRotateEncoder = 0.708 - 0.497;
             break;
 
+        case INTAKE:
+            info.lowerShooterPower = -0.1;
+            info.upperShooterPower = -0.1;
+            info.targetRotateEncoder = 0.0002;
         default:
         }
         
@@ -71,13 +89,22 @@ public class ShootCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        info.intakeSpeed = -0.3;
+
         shooter.stop();
 
     }
     
     @Override
     public boolean isFinished() {
-        return !shooter.noteIn;
+        switch (shotType) {
+        case INTAKE:
+            
+            return shooter.noteIn;
+        
+        default:
+            return !shooter.noteIn;
+        }
     }
 
     double[] angleValues = {50.59359786

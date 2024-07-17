@@ -5,7 +5,7 @@ import frc.robot.subsystems.Shooter;
 
 public class TestMoveCommand extends Command{
     Shooter shooter= Shooter.getInstance("TestMoveCommand");
-    Tester tester = Tester.getInstance();
+    //Tester tester = Tester.getInstance();
 
     public TestMoveCommand(){
 
