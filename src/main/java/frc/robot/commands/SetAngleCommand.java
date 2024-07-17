@@ -25,6 +25,8 @@ public class SetAngleCommand extends Command {
     ShootPosition shotType;
     boolean everFalse = false;
     boolean runOnceShoot = true;
+    public static boolean fire = false;
+    public static boolean fired = false;
     public SetAngleCommand(ShootPosition type) {
         this.shotType = type;
     }
@@ -37,11 +39,14 @@ public class SetAngleCommand extends Command {
     @Override
     public void execute() {
         if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
-            info = new ShootInfo(InfoParams.IGNORE);
-            info.intakeSpeed = 0.55;
-      
-            shooter.setShootInfo(info);
-      
+            fire = true;
+            if(shotType.equals(ShootPosition.INTAKE)) {
+                info = new ShootInfo(InfoParams.IGNORE);
+                info.intakeSpeed = .55;
+        
+                shooter.setShootInfo(info);
+        
+            }
             this.runOnceShoot = false;
         }
     }
@@ -49,6 +54,8 @@ public class SetAngleCommand extends Command {
     //prepare the shooter motors for the shot
     public void prepareShot() {
         runOnceShoot = true;
+        fire = false;
+        fired = false;
         info = new ShootInfo(InfoParams.IGNORE);
         double targetRotateEncoderAuto = getEncoderValue(82);
         System.out.println(targetRotateEncoderAuto);
@@ -56,8 +63,8 @@ public class SetAngleCommand extends Command {
         //shot type:
         switch (shotType) {
         case AMP:
-            info.lowerShooterPower = 0.1;
-            info.upperShooterPower = 0.25;
+            info.lowerShooterPower = 0.25;
+            info.upperShooterPower = 0.1;
             info.targetRotateEncoder = .21;
             break;
             // 3/8 inch = .01 encoder  
@@ -143,7 +150,7 @@ public class SetAngleCommand extends Command {
             return shooter.noteIn;
             
         default:
-            return !shooter.noteIn;
+            return fired;
         }
         //return false;
     }
