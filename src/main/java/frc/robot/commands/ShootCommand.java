@@ -59,8 +59,6 @@ public class ShootCommand extends Command {
 
        
     }
-
-    //prepare the shooter motors for the shot
     //prepare the shooter motors for the shot
     public void prepareShot() {
         runOnceShoot = true;
@@ -86,7 +84,12 @@ public class ShootCommand extends Command {
             info.lowerShooterPower = -0.1;
             info.upperShooterPower = -0.1;
             info.targetRotateEncoder = 0.0002;
-
+            break;
+            
+        case HORIZONTAL:
+            info.lowerShooterPower = 1;
+            info.upperShooterPower = 1;
+            info.targetRotateEncoder = 0.14;
         default:
         }
         

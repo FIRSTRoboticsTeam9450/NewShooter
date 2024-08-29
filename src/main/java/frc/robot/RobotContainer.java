@@ -46,8 +46,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-  private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps / 3; // kSpeedAt12VoltsMps desired top speed
+  private double MaxAngularRate = 1 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -92,10 +92,10 @@ public class RobotContainer {
     // m_driverController.
 
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * (MaxSpeed/6)) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * (MaxSpeed)) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-joystick.getLeftX() * (MaxSpeed/6)) // Drive left with negative X (left)
-            .withRotationalRate(-joystick.getRightX() * (MaxAngularRate/3)) // Drive counterclockwise with negative X (left)
+            .withVelocityY(-joystick.getLeftX() * (MaxSpeed)) // Drive left with negative X (left)
+            .withRotationalRate(-joystick.getRightX() * (MaxAngularRate)) // Drive counterclockwise with negative X (left)
         ));
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -111,32 +111,27 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     
-    SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
-    m_driverController.leftBumper().onTrue(auto);
+    //SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
+    //m_driverController.leftBumper().onTrue(auto);
     //m_driverController.povDown().onFalse(new Cancel(auto));
     
     SetAngleCommand amp = new SetAngleCommand(ShootPosition.AMP);
     m_driverController.povUp().onTrue((amp));
-    //m_driverController.povUp().onFalse(new Cancel(amp));
-
-    m_driverController.povDown().whileTrue(new IntakeCommand(shooter, -0.3));
-
-    FireNote fire = new FireNote();
-    
-    m_driverController.rightTrigger().onTrue(fire);
-    m_driverController.rightTrigger().onFalse(new Cancel(fire));
+    m_driverController.povUp().onFalse(new Cancel(amp));
 
     // // .709 subwoof shot || .525 Ferry shot
-    SetAngleCommand subwoof = new SetAngleCommand(ShootPosition.SUBWOOFER);
+    ShootCommand subwoof = new ShootCommand(ShootPosition.SUBWOOFER);
     m_driverController.rightBumper().onTrue((subwoof));
-    //m_driverController.leftBumper().onTrue(new Cancel(subwoof));
+    m_driverController.rightBumper().onFalse(new Cancel(subwoof));
     
-    SetAngleCommand ferryShot = new SetAngleCommand(ShootPosition.FERRY);
-    m_driverController.x().onTrue((ferryShot));
-    //m_driverController.x().onFalse(new Cancel(ferryShot));
-    // m_driverController.povDown().onTrue(distance++);
-    
+    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
+    m_driverController.leftTrigger().onTrue((intake));
+    m_driverController.leftTrigger().onFalse(new Cancel(intake));
 
+    ShootCommand horizontal = new ShootCommand(ShootPosition.HORIZONTAL);
+    m_driverController.rightTrigger().onTrue((horizontal));
+    m_driverController.rightTrigger().onTrue((horizontal));
+    
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
     // m_driverController.povRight().onTrue(up);
     // m_driverController.povRight().onFalse(new Cancel(up));
@@ -153,20 +148,12 @@ public class RobotContainer {
     // m_driverController.povUp().onTrue(straight);
     // m_driverController.povUp().onFalse(new Cancel(straight));
     
-    //ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
-    //Command cancel = new Cancel(intake);
-    // m_driverController.a().onTrue(intake);//new SetAngleCommand(-0.05, 0, 0.5));
-    // m_driverController.a().onFalse(new Cancel(intake));//new SetAngleCommand(-0.05, 0, 0.5));
     
-    //m_driverController.b().onTrue(new SetAngleCommand(-0.05, 0, 0.706));
-    //m_driverController.leftBumper().onTrue(new SetAngleCommand(shooter, -0.05, 0, 0.2917));
     
     //m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.2));
     //m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.2));
 
-    SetAngleCommand intake = new SetAngleCommand(ShootPosition.INTAKE);
-    m_driverController.leftTrigger().onTrue((intake));
-    //m_driverController.leftTrigger().onFalse(new Cancel(intake));
+    
 
 
     //m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.3));
