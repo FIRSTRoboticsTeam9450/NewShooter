@@ -5,18 +5,24 @@ import java.io.FileNotFoundException;
 import java.util.Dictionary;
 import java.util.Scanner;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Carriage;
 import frc.robot.subsystems.InfoParams;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.ShootPosition;
 
 import frc.robot.subsystems.Shooter;
 
-public class ShootCommand extends Command {
+public class LaunchCommand extends Command {
 
-    Shooter shooter = Shooter.getInstance("SetAngleCommand");
+    Intake intake = Intake.getInstance("LaunchCommand");
+    Carriage carriage = Carriage.getInstance("LaunchCommand");
+    Launcher launcher = Launcher.getInstance("LaunchCommand");
     double power;
     double encoderValue;
     boolean auto;
@@ -26,78 +32,58 @@ public class ShootCommand extends Command {
     boolean everFalse = false;
     boolean runOnceShoot = true;
     SetLauncherAngle horizontalCommand = new SetLauncherAngle(encoderValue);
+    Timer timer;
 
-    public ShootCommand(ShootPosition type) {
+    public LaunchCommand(ShootPosition type) {
         this.shotType = type;
     }
 
     @Override
     public void initialize() {
-        System.out.println("ShootCommand ");
+        System.out.println("LaunchCommand ");
         prepareShot();
     }
 
     @Override
     public void execute() {
-        switch (shotType) {
-            case INTAKE:
-                if (shooter.onAngle && runOnceShoot) {
-                    info = new ShootInfo(Double.MAX_VALUE);
-                    info.intakeSpeed = 0.3;
+        if (launcher.atSpeed() && carriage.onAngle && runOnceShoot) {
+            intake.setPower(1);
 
-                    shooter.setShootInfo(info);
-
-                    this.runOnceShoot = false;
-                }
-            default:
-                 if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
-                    info = new ShootInfo(Double.MAX_VALUE);
-                    info.intakeSpeed = 0.3;
-      
-                    shooter.setShootInfo(info);
-      
-                    this.runOnceShoot = false;
-                }
+            this.runOnceShoot = false;
+            timer.reset();
+            timer.restart();
         }
-
        
     }
     //prepare the shooter motors for the shot
     public void prepareShot() {
         runOnceShoot = true;
-        info = new ShootInfo(InfoParams.IGNORE);
         double targetRotateEncoderAuto = getEncoderValue(133);
         System.out.println(targetRotateEncoderAuto);
         SmartDashboard.putNumber("Auto generated target encoder", targetRotateEncoderAuto);
         //shot type:
         switch (shotType) {
         case AMP:
-            info.lowerShooterPower = 0.1;
-            info.upperShooterPower = 0.25;
-            info.targetRotateEncoder = 0.0002;
+            launcher.setPowers(0.25, 0.1);
+            carriage.setTarget(0.0002);
             break;
             // 3/8 inch = .01 encoder  
         case SUBWOOFER: // mechanical max: left: .71/.2108 right:.705/.2108 || mechanical min: left .499/.000 right: .494/-.000
-            info.lowerShooterPower = 1;
-            info.upperShooterPower = 1;
-            info.targetRotateEncoder = 0.21;
+            launcher.setPowers(1, 1);
+            carriage.setTarget(0.21);
             break;
         
         case INTAKE:
-            info.lowerShooterPower = -0.1;
-            info.upperShooterPower = -0.1;
-            info.targetRotateEncoder = 0.0002;
+            launcher.setPowers(-0.1, -0.1);
+            carriage.setTarget(0.0002);
             break;
             
         case HORIZONTAL:
-            info.lowerShooterPower = 1;
-            info.upperShooterPower = 1;
-            info.targetRotateEncoder = 0.14;
+            launcher.setPowers(1, 1);
+            carriage.setTarget(0.14);
         default:
         }
         
-
-        shooter.setShootInfo(info);
     }
 
     public double getEncoderValue(double distance) {
@@ -126,25 +112,13 @@ public class ShootCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-
-        info.intakeSpeed = -0.3;
-
-        shooter.stop();
-
-        if (shotType == ShootPosition.INTAKE && !interrupted) {
-            horizontalCommand.schedule();
-        }
+        launcher.setPowers(0, 0);
+        intake.setPower(0);
     }
     
     @Override
     public boolean isFinished() {
-        switch (shotType) {
-        case INTAKE:
-            return shooter.noteIn;
-        
-        default:
-            return !shooter.noteIn;
-        }
+        return !runOnceShoot && timer.hasElapsed(1);
     }
 
     double[] angleValues = {50.59359786

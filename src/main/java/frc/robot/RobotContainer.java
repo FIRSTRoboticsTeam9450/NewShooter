@@ -14,16 +14,20 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Cancel;
-import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.LaunchCommand;
+import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.SetAngleCommand;
+import frc.robot.commands.SetLauncherAngle;
 //import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InfoParams;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.ShootPosition;
 import frc.robot.subsystems.Shooter;
@@ -33,10 +37,15 @@ import java.util.Set;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.TunerConstants;
+import frc.robot.subsystems.Carriage;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -46,8 +55,11 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps / 3; // kSpeedAt12VoltsMps desired top speed
-  private double MaxAngularRate = 1 * Math.PI; // 3/4 of a rotation per second max angular velocity
+
+  // CHANGE THIS TO CHANGE ROBOT MAX SPEED!!
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps / 3; // Linear (m/s)
+  private double MaxAngularRate = 1 * Math.PI; // Rotation (rad/s)
+
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -63,7 +75,10 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   // The robot's subsystems and commands are defined here...
-  private final Shooter shooter = Shooter.getInstance("RobotContainer");
+  private final Launcher launcher = Launcher.getInstance("RobotContainer");
+  private final Intake intake = Intake.getInstance("RobotContainer");
+  private final Carriage carriage = Carriage.getInstance("RobotContainer");
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -90,7 +105,6 @@ public class RobotContainer {
     // cancelling on release.
     //double distance = SmartDashboard.getNumber("Distance:", 0);
     // m_driverController.
-
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * (MaxSpeed)) // Drive forward with
                                                                                            // negative Y (forward)
@@ -115,22 +129,18 @@ public class RobotContainer {
     //m_driverController.leftBumper().onTrue(auto);
     //m_driverController.povDown().onFalse(new Cancel(auto));
     
-    SetAngleCommand amp = new SetAngleCommand(ShootPosition.AMP);
-    m_driverController.povUp().onTrue((amp));
-    m_driverController.povUp().onFalse(new Cancel(amp));
+    m_driverController.povUp().onTrue(new LaunchCommand(ShootPosition.AMP));
 
     // // .709 subwoof shot || .525 Ferry shot
-    ShootCommand subwoof = new ShootCommand(ShootPosition.SUBWOOFER);
-    m_driverController.rightBumper().onTrue((subwoof));
-    m_driverController.rightBumper().onFalse(new Cancel(subwoof));
-    
-    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
-    m_driverController.leftTrigger().onTrue((intake));
-    m_driverController.leftTrigger().onFalse(new Cancel(intake));
+    m_driverController.rightBumper().onTrue(new LaunchCommand(ShootPosition.SUBWOOFER));
 
-    ShootCommand horizontal = new ShootCommand(ShootPosition.HORIZONTAL);
-    m_driverController.rightTrigger().onTrue((horizontal));
-    m_driverController.rightTrigger().onTrue((horizontal));
+    Command intakeCommand = new SetLauncherAngle(0.0002).andThen(new IntakeCommand(0.1).andThen(new ParallelCommandGroup(new SetLauncherAngle(0.14), new ProcNoteCommand())));
+
+    m_driverController.leftTrigger().onTrue(intakeCommand);
+
+    m_driverController.rightTrigger().onTrue(new LaunchCommand(ShootPosition.HORIZONTAL));
+
+    m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
     
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
     // m_driverController.povRight().onTrue(up);

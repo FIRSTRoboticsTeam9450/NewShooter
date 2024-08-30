@@ -3,12 +3,11 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 
-public class IntakeCommand extends Command {
-
-    Intake intake = Intake.getInstance("IntakeCommand");
+public class IntakeSetPowerCommand extends Command {
+    Intake intake = Intake.getInstance("IntakeSetPowerCommand");
     double power;
 
-    public IntakeCommand(double power) {
+    public IntakeSetPowerCommand(double power) {
         this.power = power;
     }
 
@@ -18,13 +17,7 @@ public class IntakeCommand extends Command {
     }
 
     @Override
-    public boolean isFinished() {
-        return intake.getEntryLaserDistance() <= 60;
-    }
-
-    @Override
     public void end(boolean interrupted) {
         intake.setPower(0);
     }
-    
 }
