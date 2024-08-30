@@ -19,6 +19,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.SetAngleCommand;
+import frc.robot.commands.SetLauncherAngle;
 //import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.TimeStampCommand;
@@ -33,7 +34,9 @@ import java.util.Set;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.TunerConstants;
@@ -46,15 +49,15 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps / 3; // kSpeedAt12VoltsMps desired top speed
-  private double MaxAngularRate = 1 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
+  private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -92,9 +95,9 @@ public class RobotContainer {
     // m_driverController.
 
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * (MaxSpeed)) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(-Math.signum(joystick.getLeftY()) * Math.pow(joystick.getLeftY(), 2) * (MaxSpeed)) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-joystick.getLeftX() * (MaxSpeed)) // Drive left with negative X (left)
+            .withVelocityY(-Math.signum(joystick.getLeftX()) * Math.pow(joystick.getLeftX(), 2) * (MaxSpeed)) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * (MaxAngularRate)) // Drive counterclockwise with negative X (left)
         ));
 
@@ -117,20 +120,18 @@ public class RobotContainer {
     
     SetAngleCommand amp = new SetAngleCommand(ShootPosition.AMP);
     m_driverController.povUp().onTrue((amp));
-    m_driverController.povUp().onFalse(new Cancel(amp));
 
     // // .709 subwoof shot || .525 Ferry shot
     ShootCommand subwoof = new ShootCommand(ShootPosition.SUBWOOFER);
-    m_driverController.rightBumper().onTrue((subwoof));
-    m_driverController.rightBumper().onFalse(new Cancel(subwoof));
+    m_driverController.rightTrigger().onTrue((subwoof));
     
-    ShootCommand intake = new ShootCommand(ShootPosition.INTAKE);
+    Command intake = new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.21));
     m_driverController.leftTrigger().onTrue((intake));
-    m_driverController.leftTrigger().onFalse(new Cancel(intake));
 
     ShootCommand horizontal = new ShootCommand(ShootPosition.HORIZONTAL);
-    m_driverController.rightTrigger().onTrue((horizontal));
-    m_driverController.rightTrigger().onTrue((horizontal));
+    m_driverController.rightBumper().onTrue((horizontal));
+
+    m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
     
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
     // m_driverController.povRight().onTrue(up);

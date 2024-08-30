@@ -40,7 +40,7 @@ public class ShootCommand extends Command {
             case INTAKE:
                 if (shooter.onAngle && runOnceShoot) {
                     info = new ShootInfo(Double.MAX_VALUE);
-                    info.intakeSpeed = 0.3;
+                    info.intakeSpeed = 1;
 
                     shooter.setShootInfo(info);
 
@@ -49,7 +49,7 @@ public class ShootCommand extends Command {
             default:
                  if (shooter.shooterMotorsOn && shooter.onAngle && runOnceShoot) {
                     info = new ShootInfo(Double.MAX_VALUE);
-                    info.intakeSpeed = 0.3;
+                    info.intakeSpeed = 1;
       
                     shooter.setShootInfo(info);
       
