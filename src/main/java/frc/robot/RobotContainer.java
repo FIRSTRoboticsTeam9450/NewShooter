@@ -20,8 +20,10 @@ import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.SetLauncherAngle;
+import frc.robot.commands.SetOnlyAngleCommand;
 //import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShootNowCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InfoParams;
@@ -118,19 +120,21 @@ public class RobotContainer {
     //m_driverController.leftBumper().onTrue(auto);
     //m_driverController.povDown().onFalse(new Cancel(auto));
     
-    SetAngleCommand amp = new SetAngleCommand(ShootPosition.AMP);
-    m_driverController.povUp().onTrue((amp));
 
-    // // .709 subwoof shot || .525 Ferry shot
-    ShootCommand subwoof = new ShootCommand(ShootPosition.SUBWOOFER);
-    m_driverController.rightTrigger().onTrue((subwoof));
+    m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));
     
-    Command intake = new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.21));
-    m_driverController.leftTrigger().onTrue((intake));
+    IntakeCommand moveNoteForward = new IntakeCommand(shooter,.1);
+    m_driverController.povUp().onTrue(moveNoteForward);
+    m_driverController.povUp().onFalse(new Cancel(moveNoteForward));
 
-    ShootCommand horizontal = new ShootCommand(ShootPosition.HORIZONTAL);
-    m_driverController.rightBumper().onTrue((horizontal));
+    IntakeCommand moveNoteBack = new IntakeCommand(shooter,-.1);
+    m_driverController.povDown().onTrue(moveNoteBack);
+    m_driverController.povDown().onFalse(new Cancel(moveNoteBack));
 
+    m_driverController.rightTrigger().onTrue(new ShootNowCommand(ShootPosition.SUBWOOFER));//(new ShootCommand(ShootPosition.SUBWOOFER)));
+    m_driverController.leftTrigger().onTrue((new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.21))));
+    m_driverController.rightBumper().onTrue(new ShootCommand(ShootPosition.HORIZONTAL));
+    m_driverController.leftBumper().onTrue(new SetOnlyAngleCommand(ShootPosition.SUBWOOFER));
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
     
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));

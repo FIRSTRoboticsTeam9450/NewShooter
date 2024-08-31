@@ -60,8 +60,8 @@ public class Shooter extends SubsystemBase {
   public boolean checkRight = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
-  final double kMaxRotateSpeedUp = .7; // up .5 down -.2
-  final double kMaxRotateSpeedDown = -.3;
+  final double kMaxRotateSpeedUp = 1.0; //.7; // up .5 down -.2
+  final double kMaxRotateSpeedDown = -1.0; //-.3;
   static final double kLeftEncoderOffset = .49942;
   final double kRightEncoderOffset = .4945;
   final double kMaxEncoderDifference = .02;
@@ -215,11 +215,11 @@ public class Shooter extends SubsystemBase {
       if(Math.signum(previousRotatePower) != Math.signum(power)) {
         previousRotatePower = 0;
       }
-      if(power - previousRotatePower > .01) {
-        power = previousRotatePower + .004;
+      if(power - previousRotatePower > .015) {
+        power = previousRotatePower + .015;//.004;
       }
-      else if(power - previousRotatePower < -.01) {
-        power = previousRotatePower - .004;
+      else if(power - previousRotatePower < -.015) {
+        power = previousRotatePower - .015;//.004;
       }
     }
     previousRotatePower = power;
