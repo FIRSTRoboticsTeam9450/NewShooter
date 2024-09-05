@@ -62,8 +62,8 @@ public class Shooter extends SubsystemBase {
   double currentEncoderValueRight = 0;
   final double kMaxRotateSpeedUp = 0.1; //.7; // up .5 down -.2
   final double kMaxRotateSpeedDown = -0.1; //-.3;
-  static final double kLeftEncoderOffset = .49942;
-  final double kRightEncoderOffset = .4945;
+  static final double kLeftEncoderOffset = 0.51;//.49942
+  static final double kRightEncoderOffset = 0.516;//.4945;
   final double kMaxEncoderDifference = .02;
   double previousRotatePower = 0;
   boolean oneTime = true;
@@ -178,24 +178,26 @@ public class Shooter extends SubsystemBase {
 
   double previousEncoder = currentEncoderValueLeft;
   double boost = 0;
+  double boostThreshold = 0.1;
   double count2 = 0;
+  double minPower = 0.05;
   public double rotate(double targetEncoderValue, double currentEncoderValue) {
     double error = (targetEncoderValue - currentEncoderValue);
     double power = error * kp + boost;
 
     if(!onAngle) {
-      if(power > 0 && power < .05) {
-        power = .05;
+      if(power > 0 && power < minPower) {
+        power = minPower;
       }
-      else if(power < 0 && power > -.05) {
-        power = -.05;
+      else if(power < 0 && power > -minPower) {
+        power = -minPower;
       }
     }
 
-    if(power > .1) {
+    if(power > boostThreshold) {
       boost = .05;
     }
-    else if(power < -.1) {
+    else if(power < -boostThreshold) {
       boost = -.05;
     }
 
@@ -215,6 +217,7 @@ public class Shooter extends SubsystemBase {
       if(Math.signum(previousRotatePower) != Math.signum(power)) {
         previousRotatePower = 0;
       }
+      // can only change 0.004 per loop
       if(power - previousRotatePower > .004) {
         power = previousRotatePower + .004;//.004;
       }
@@ -263,11 +266,11 @@ public class Shooter extends SubsystemBase {
   // zero basing encoders left encoder has .497 offset, right has ?
 
   public double getLeftRotateEncoder() {
-    return 0.51 - throughboreRotateLeft.getPosition() /*- kLeftEncoderOffset*/;
+    return kLeftEncoderOffset - throughboreRotateLeft.getPosition() /*- kLeftEncoderOffset*/;
   }
 
   public double getRightRotateEncoder() {
-    return 0.516 - throughboreRotateRight.getPosition() /*- kRightEncoderOffset*/;
+    return kRightEncoderOffset - throughboreRotateRight.getPosition() /*- kRightEncoderOffset*/;
   }
 
   public int setShootInfo(ShootInfo info) {

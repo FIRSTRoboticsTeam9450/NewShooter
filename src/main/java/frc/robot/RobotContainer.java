@@ -27,6 +27,7 @@ import frc.robot.commands.ShootNowCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InfoParams;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.ShootPosition;
 import frc.robot.subsystems.Shooter;
@@ -68,7 +69,8 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   // The robot's subsystems and commands are defined here...
-  private final Shooter shooter = Shooter.getInstance("RobotContainer");
+  //private final Shooter shooter = Shooter.getInstance("RobotContainer");
+  private final Launcher launcher = Launcher.getInstance("RobotContainer");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -120,6 +122,12 @@ public class RobotContainer {
     //m_driverController.povDown().onFalse(new Cancel(auto));
     
 
+    // OLD COMMANDS
+
+    m_driverController.leftBumper().onTrue(new InstantCommand(() -> launcher.setVelocities(500, 500)));
+    m_driverController.leftBumper().onFalse(new InstantCommand(() -> launcher.setVelocities(0, 0)));
+
+    /*
     m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));
     
     IntakeCommand moveNoteForward = new IntakeCommand(shooter,.1);
@@ -134,6 +142,7 @@ public class RobotContainer {
     m_driverController.leftTrigger().onTrue((new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.2))));
     m_driverController.rightBumper().onTrue(new ShootCommand(ShootPosition.HORIZONTAL));
     m_driverController.leftBumper().onTrue(new SetOnlyAngleCommand(ShootPosition.SUBWOOFER));
+    */
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
     
     // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
