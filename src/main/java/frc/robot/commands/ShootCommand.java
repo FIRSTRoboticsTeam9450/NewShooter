@@ -77,7 +77,7 @@ public class ShootCommand extends Command {
         case SUBWOOFER: // mechanical max: left: .71/.2108 right:.705/.2108 || mechanical min: left .499/.000 right: .494/-.000
             info.lowerShooterPower = 1;
             info.upperShooterPower = 1;
-            info.targetRotateEncoder = 0.21;
+            info.targetRotateEncoder = 0.2;
             break;
         
         case INTAKE:

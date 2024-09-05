@@ -102,7 +102,6 @@ public class RobotContainer {
             .withVelocityY(-Math.signum(joystick.getLeftX()) * Math.pow(joystick.getLeftX(), 2) * (MaxSpeed)) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * (MaxAngularRate)) // Drive counterclockwise with negative X (left)
         ));
-
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
@@ -132,7 +131,7 @@ public class RobotContainer {
     m_driverController.povDown().onFalse(new Cancel(moveNoteBack));
 
     m_driverController.rightTrigger().onTrue(new ShootNowCommand(ShootPosition.SUBWOOFER));//(new ShootCommand(ShootPosition.SUBWOOFER)));
-    m_driverController.leftTrigger().onTrue((new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.21))));
+    m_driverController.leftTrigger().onTrue((new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.2))));
     m_driverController.rightBumper().onTrue(new ShootCommand(ShootPosition.HORIZONTAL));
     m_driverController.leftBumper().onTrue(new SetOnlyAngleCommand(ShootPosition.SUBWOOFER));
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
@@ -175,6 +174,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null; //Autos.exampleAuto(shooter);
+    return drivetrain.getAutoPath("Test"); //Autos.exampleAuto(shooter);
   }
 }

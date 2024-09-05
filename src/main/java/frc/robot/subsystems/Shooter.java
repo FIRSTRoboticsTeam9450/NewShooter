@@ -28,8 +28,8 @@ public class Shooter extends SubsystemBase {
   CANSparkFlex motorIntake = new CANSparkFlex(32, MotorType.kBrushless);
   CANSparkFlex motorShooterUpper = new CANSparkFlex(30, MotorType.kBrushless);
   CANSparkFlex motorShooterLower = new CANSparkFlex(31, MotorType.kBrushless);
-  CANSparkMax motorRotateLeft = new CANSparkMax(28, MotorType.kBrushless);
-  CANSparkMax motorRotateRight = new CANSparkMax(29, MotorType.kBrushless);
+  CANSparkFlex motorRotateLeft = new CANSparkFlex(28, MotorType.kBrushless);
+  CANSparkFlex motorRotateRight = new CANSparkFlex(29, MotorType.kBrushless);
   RelativeEncoder encoderShooterUpper = motorShooterUpper.getEncoder();
   RelativeEncoder encoderShooterLower = motorShooterLower.getEncoder();
   SparkAbsoluteEncoder throughboreRotateLeft = motorRotateLeft.getAbsoluteEncoder();
@@ -60,8 +60,8 @@ public class Shooter extends SubsystemBase {
   public boolean checkRight = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
-  final double kMaxRotateSpeedUp = 1.0; //.7; // up .5 down -.2
-  final double kMaxRotateSpeedDown = -1.0; //-.3;
+  final double kMaxRotateSpeedUp = 0.1; //.7; // up .5 down -.2
+  final double kMaxRotateSpeedDown = -0.1; //-.3;
   static final double kLeftEncoderOffset = .49942;
   final double kRightEncoderOffset = .4945;
   final double kMaxEncoderDifference = .02;
@@ -215,11 +215,11 @@ public class Shooter extends SubsystemBase {
       if(Math.signum(previousRotatePower) != Math.signum(power)) {
         previousRotatePower = 0;
       }
-      if(power - previousRotatePower > .015) {
-        power = previousRotatePower + .015;//.004;
+      if(power - previousRotatePower > .004) {
+        power = previousRotatePower + .004;//.004;
       }
-      else if(power - previousRotatePower < -.015) {
-        power = previousRotatePower - .015;//.004;
+      else if(power - previousRotatePower < -.004) {
+        power = previousRotatePower - .004;//.004;
       }
     }
     previousRotatePower = power;
@@ -263,11 +263,11 @@ public class Shooter extends SubsystemBase {
   // zero basing encoders left encoder has .497 offset, right has ?
 
   public double getLeftRotateEncoder() {
-    return throughboreRotateLeft.getPosition() - kLeftEncoderOffset;
+    return 0.51 - throughboreRotateLeft.getPosition() /*- kLeftEncoderOffset*/;
   }
 
   public double getRightRotateEncoder() {
-    return throughboreRotateRight.getPosition() - kRightEncoderOffset;
+    return 0.516 - throughboreRotateRight.getPosition() /*- kRightEncoderOffset*/;
   }
 
   public int setShootInfo(ShootInfo info) {
