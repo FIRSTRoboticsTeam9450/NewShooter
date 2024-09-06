@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -17,12 +20,18 @@ public class Launcher extends SubsystemBase {
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
 
-    PIDController upperController = new PIDController(0.01, 0, 0);
-    PIDController lowerController = new PIDController(0.01, 0, 0);
+    PIDController upperController = new PIDController(0.0015, 0.005, 0);
+    PIDController lowerController = new PIDController(0.00, 0, 0);
+
+    static final double upperKv = 0.00172;
+    static final double lowerKv = 0;
+
+    double upperPower = 0;
+    double lowerPower = 0;
 
     boolean atSpeed = true;
 
-    boolean usePID = false;
+    boolean usePID = true;
 
     private static Launcher launcher;
 
@@ -49,14 +58,21 @@ public class Launcher extends SubsystemBase {
     }
 
     public void updatePIDs() {
-        double upperPower = upperController.calculate(encoderUpper.getVelocity());
-        double lowerPower = lowerController.calculate(encoderLower.getVelocity());
+        upperPower = upperController.getSetpoint() * upperKv;
+        lowerPower = lowerController.getSetpoint() * lowerKv;
 
-        upperPower = MathUtil.clamp(upperPower, -1, 1);
-        lowerPower = MathUtil.clamp(lowerPower, -1, 1);
+        if (Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity()) < 300) {
+            upperPower += upperController.calculate(encoderUpper.getVelocity());
+        }
+        if (Math.abs(lowerController.getPositionError()) < 300) {
+            lowerPower += lowerController.calculate(encoderLower.getVelocity());
+        }
 
-        motorUpper.set(upperPower);
-        motorLower.set(lowerPower);
+        upperPower = MathUtil.clamp(upperPower, -12, 12);
+        lowerPower = MathUtil.clamp(lowerPower, -12, 12);
+
+        motorUpper.setVoltage(upperPower);
+        motorLower.setVoltage(lowerPower);
     }
 
     public void setVelocities(double upper, double lower) {
@@ -78,6 +94,15 @@ public class Launcher extends SubsystemBase {
         if (usePID) {
             updatePIDs();
         }
+
+        Logger.recordOutput("Launcher/UpperVelocity", encoderUpper.getVelocity());
+        Logger.recordOutput("Launcher/UpperSetpoint", upperController.getSetpoint());
+        Logger.recordOutput("Launcher/UpperVoltage", upperPower);
+
+        Logger.recordOutput("Launcher/LowerSetpoint", lowerController.getSetpoint());
+        Logger.recordOutput("Launcher/LowerVelocity", encoderLower.getVelocity());
+        Logger.recordOutput("Launcher/LowerVoltage", lowerPower);
+
     }
     
 }
