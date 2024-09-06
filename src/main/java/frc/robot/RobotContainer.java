@@ -19,6 +19,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.SetAngleCommand;
+import frc.robot.commands.SetAngleCommandTest2;
 import frc.robot.commands.SetLauncherAngle;
 import frc.robot.commands.SetOnlyAngleCommand;
 //import frc.robot.commands.SetAngleCommandTest;
@@ -127,6 +128,10 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new InstantCommand(() -> launcher.setVelocities(500, 500)));
     m_driverController.leftBumper().onFalse(new InstantCommand(() -> launcher.setVelocities(0, 0)));
 
+    SetAngleCommandTest2 rotate = new SetAngleCommandTest2(.1);
+    m_driverController.y().onTrue(rotate);
+    m_driverController.y().onFalse(new Cancel(rotate));
+    
     /*
     m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));
     
