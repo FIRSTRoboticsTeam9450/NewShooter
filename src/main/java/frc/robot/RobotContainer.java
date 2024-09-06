@@ -124,7 +124,7 @@ public class RobotContainer {
 
     // OLD COMMANDS
 
-    m_driverController.leftBumper().onTrue(new InstantCommand(() -> launcher.setVelocities(500, 500)));
+    m_driverController.leftBumper().onTrue(new InstantCommand(() -> launcher.setVelocities(6000, 0.1)));
     m_driverController.leftBumper().onFalse(new InstantCommand(() -> launcher.setVelocities(0, 0)));
 
     /*
