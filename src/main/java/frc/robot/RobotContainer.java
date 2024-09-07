@@ -12,14 +12,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AutoIntakeCommand;
+import frc.robot.commands.IntakeNoteCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Cancel;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireCommand;
-import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.ProcNoteCommand;
-import frc.robot.commands.SetAngleCommandTest2;
+import frc.robot.commands.SetLauncherAngleCommand;
 import frc.robot.commands.SetLauncherSpeedCommand;
 //import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.TimeStampCommand;
@@ -28,7 +28,7 @@ import frc.robot.subsystems.InfoParams;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.ShootInfo;
-import frc.robot.subsystems.ShootPosition;
+import frc.robot.subsystems.LaunchPosition;
 import frc.robot.subsystems.Shooter;
 
 import java.util.Set;
@@ -126,11 +126,11 @@ public class RobotContainer {
 
     // OLD COMMANDS
 
-    m_driverController.leftTrigger().onTrue(new IntakeCommand());
+    m_driverController.leftTrigger().onTrue(new AutoIntakeCommand());
     m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true)));
     m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand()));
-    m_driverController.leftBumper().onTrue(new SetAngleCommandTest2(ShootPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())));
-    m_driverController.povLeft().onTrue(new SetAngleCommandTest2(ShootPosition.FERRY));
+    m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())));
+    m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY));
     //m_driverController.leftBumper().onFalse(new InstantCommand(() -> intake.setPower(0)));
 
     //m_driverController.leftBumper().onFalse(new Cancel(rotate));

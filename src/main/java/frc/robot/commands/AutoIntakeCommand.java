@@ -1,35 +1,42 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.LaunchPosition;
+import frc.robot.subsystems.Shooter;
 
+/** Automates the whole process of intaking a note. Moves the arm down, runs the intake, moves the arm up once a note is detected, and prepares the note to be fired */
 public class AutoIntakeCommand extends Command {
 
-    Intake intake = Intake.getInstance("AutoIntakeCommand");
+    Command goToIntakeAngle = new SetLauncherAngleCommand(LaunchPosition.INTAKE);
+    Command goToStorageAngle = new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER);
+    Command runIntake = new IntakeNoteCommand();
+    Command wait = new WaitCommand(0.5);
+    Command processNote = new ProcNoteCommand();
+
+    Command toRun = new ParallelCommandGroup(
+        goToIntakeAngle,
+        new SequentialCommandGroup(
+            runIntake,
+            goToStorageAngle,
+            wait,
+            processNote
+        )
+    );
 
     @Override
     public void initialize() {
-        addRequirements(intake);
-        if (intake.getEntryLaserDistance() > 150) {
-            intake.setPower(1);
-        }
-    }
-
-    @Override
-    public void execute() {
-        if (intake.getEntryLaserDistance() > 150) {
-            intake.setPower(1);
-        }
-    }
-
-    @Override
-    public boolean isFinished() {
-        return intake.getEntryLaserDistance() < 150;
+        toRun.schedule();
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.setPower(0);
     }
-    
+
+    @Override
+    public boolean isFinished() {
+        return toRun.isFinished();
+    }
 }

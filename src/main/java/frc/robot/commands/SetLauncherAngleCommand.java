@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmRotater;
 import frc.robot.subsystems.InfoParams;
 import frc.robot.subsystems.ShootInfo;
-import frc.robot.subsystems.ShootPosition;
+import frc.robot.subsystems.LaunchPosition;
 
 import frc.robot.subsystems.Shooter;
 
-public class SetAngleCommandTest2 extends Command {
+/** Sets the angle of the launcher arm */
+public class SetLauncherAngleCommand extends Command {
 
     ArmRotater rotate = ArmRotater.getInstance("SetAngleCommandTest2");
     double power;
@@ -22,14 +23,23 @@ public class SetAngleCommandTest2 extends Command {
     boolean auto;
     double angle;
     ShootInfo info;
-    ShootPosition shotType;
+    LaunchPosition shotType;
     boolean everFalse = false;
     boolean runOnceShoot = true;
-    public SetAngleCommandTest2(double encoderValue) {
+
+    /**
+     * Creates a new SetLauncherAngle command
+     * @param encoderValue the desired encoder value to go to (0 to 0.21)
+     */
+    public SetLauncherAngleCommand(double encoderValue) {
         this.encoderValue = encoderValue;
     }
 
-    public SetAngleCommandTest2(ShootPosition position) {
+    /**
+     * Creates a new SetLauncherAngle command
+     * @param position the desired position to go to
+     */
+    public SetLauncherAngleCommand(LaunchPosition position) {
         switch(position) {
             case SUBWOOFER:
                 encoderValue = 0.21;
@@ -48,7 +58,6 @@ public class SetAngleCommandTest2 extends Command {
 
     @Override
     public void initialize() {
-        System.out.println("ShootCommand ");
         rotate.setRotationTarget(encoderValue);
     }
 

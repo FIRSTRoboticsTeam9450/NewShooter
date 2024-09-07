@@ -10,11 +10,14 @@ import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** Controls the intake motor and dual LaserCAN sensors */
 public class Intake extends SubsystemBase {
 
     CANSparkFlex motorIntake = new CANSparkFlex(32, MotorType.kBrushless);
     private static Intake intake;
 
+    // LaserCANs are configured with a medianfilter, which means the last 3 reults are averaged together
+    // this smooths out the output nicely
     private LaserCan entryLaser;
     private LaserCan.Measurement entryMeasurement; 
     MedianFilter entryMedianDistance = new MedianFilter(3);
@@ -25,6 +28,7 @@ public class Intake extends SubsystemBase {
     MedianFilter exitMedianDistance = new MedianFilter(3);
     double exitLaserDistance;
 
+    //** Creates a new Intake object */
     public Intake() {
         motorIntake.restoreFactoryDefaults();
         motorIntake.setInverted(true);
@@ -52,7 +56,11 @@ public class Intake extends SubsystemBase {
         exitMeasurement = exitLaser.getMeasurement();
     }
 
-    // Returns an instance of the Intake class - use this instead of passing to commands
+    /**
+     * Returns an instance of the Intake class - use this instead of passing to commands
+     * @param name The name of the class requesting the Intake instance
+     * @return An instance of Intake
+     */
     public static Intake getInstance(String name) {
         System.out.println(name + " has acquired Intake");
         if (intake == null) {
@@ -61,12 +69,12 @@ public class Intake extends SubsystemBase {
         return intake;
     }
 
-    // Sets the intake motor power
+    /** Sets the intake motor power */
     public void setPower(double power) {
         motorIntake.set(power);
     }
 
-    // Updates reads the measurements from the lasers
+    /** Updates the measurements from the lasers */
     public void updateLasers() {
         try {
           entryMeasurement = entryLaser.getMeasurement();
@@ -89,12 +97,18 @@ public class Intake extends SubsystemBase {
         }
     }
 
-    // Returns the distance read by the entry laser
+    /**
+     * Returns the distance read by the entry laser
+     * @return distance (millimeters)
+     */
     public double getEntryLaserDistance() {
         return entryLaserDistance;
     }
 
-    // Returns the distance read by the exit laser
+    /**
+     * Returns the distance read by the exit laser
+     * @return distance (millimeters)
+     */
     public double getExitLaserDistance() {
         return exitLaserDistance;
     }
@@ -103,9 +117,5 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         updateLasers();
     }
-
-
-
-
-    
+  
 }

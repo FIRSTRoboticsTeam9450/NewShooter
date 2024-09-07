@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.ShootInfo;
-import frc.robot.subsystems.ShootPosition;
+import frc.robot.subsystems.LaunchPosition;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 
