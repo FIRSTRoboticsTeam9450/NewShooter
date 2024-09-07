@@ -15,20 +15,13 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Cancel;
-import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireCommand;
-import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ProcNoteCommand;
-import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.SetAngleCommandTest2;
-import frc.robot.commands.SetLauncherAngle;
 import frc.robot.commands.SetLauncherSpeedCommand;
-import frc.robot.commands.SetOnlyAngleCommand;
 //import frc.robot.commands.SetAngleCommandTest;
-import frc.robot.commands.ShootCommand;
-import frc.robot.commands.ShootNowCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InfoParams;
@@ -46,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -132,13 +126,14 @@ public class RobotContainer {
 
     // OLD COMMANDS
 
-    m_driverController.leftBumper().onTrue(new AutoIntakeCommand().andThen(new WaitCommand(0.5).andThen(new ProcNoteCommand())));
-    m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(3000, 3000).andThen(new FireCommand()));
+    m_driverController.leftTrigger().onTrue(new IntakeCommand());
+    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true)));
+    m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand()));
+    m_driverController.leftBumper().onTrue(new SetAngleCommandTest2(ShootPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())));
+    m_driverController.povLeft().onTrue(new SetAngleCommandTest2(ShootPosition.FERRY));
     //m_driverController.leftBumper().onFalse(new InstantCommand(() -> intake.setPower(0)));
 
-    SetAngleCommandTest2 rotate = new SetAngleCommandTest2(.1);
-    m_driverController.y().onTrue(rotate);
-    m_driverController.y().onFalse(new Cancel(rotate));
+    //m_driverController.leftBumper().onFalse(new Cancel(rotate));
     
     /*
     m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));

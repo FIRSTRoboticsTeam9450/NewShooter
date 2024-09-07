@@ -1,24 +1,41 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.ShootPosition;
 import frc.robot.subsystems.Shooter;
 
 public class IntakeCommand extends Command {
-    Shooter shooter;
-    double power;
 
-    public IntakeCommand(Shooter shooter, double power) {
-        this.shooter = shooter;
-        this.power = power;
-    }
+    Command goToIntakeAngle = new SetAngleCommandTest2(ShootPosition.INTAKE);
+    Command goToStorageAngle = new SetAngleCommandTest2(ShootPosition.SUBWOOFER);
+    Command runIntake = new AutoIntakeCommand();
+    Command wait = new WaitCommand(0.5);
+    Command processNote = new ProcNoteCommand();
+
+    Command toRun = new ParallelCommandGroup(
+        goToIntakeAngle,
+        new SequentialCommandGroup(
+            runIntake,
+            goToStorageAngle,
+            wait,
+            processNote
+        )
+    );
 
     @Override
     public void initialize() {
-        shooter.setIntakeSpeed(power);
+        toRun.schedule();
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setIntakeSpeed(0);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return toRun.isFinished();
     }
 }

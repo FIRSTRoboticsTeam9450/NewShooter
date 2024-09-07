@@ -12,13 +12,25 @@ public class FireCommand extends Command {
 
     boolean fired;
     boolean dontRun;
+    boolean dontStabilize;
 
     Timer timer = new Timer();
 
+    public FireCommand() {
+
+    }
+
+    public FireCommand(boolean dontStabilize) {
+        this.dontStabilize = dontStabilize;
+    }
+
     @Override
     public void initialize() {
+        addRequirements(intake);
+        addRequirements(launcher);
         intake.setPower(0);
         fired = false;
+        dontRun = false;
         if (intake.getEntryLaserDistance() > 150) {
             dontRun = true;
         }
@@ -26,7 +38,8 @@ public class FireCommand extends Command {
 
     @Override
     public void execute() {
-        if (launcher.atSpeed() && !fired) {
+        int tolerance = dontStabilize ? 0 : 20;
+        if (launcher.atSpeed(tolerance) && !fired) {
             intake.setPower(1);
             timer.restart();
             fired = true;
@@ -40,10 +53,8 @@ public class FireCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!dontRun) {
-            launcher.setVelocities(0, 0);
-            intake.setPower(0);
-        }
+        launcher.setVelocities(0, 0);
+        intake.setPower(0);
     }
 
 }

@@ -29,6 +29,23 @@ public class SetAngleCommandTest2 extends Command {
         this.encoderValue = encoderValue;
     }
 
+    public SetAngleCommandTest2(ShootPosition position) {
+        switch(position) {
+            case SUBWOOFER:
+                encoderValue = 0.21;
+                break;
+            case INTAKE:
+                encoderValue = 0.004;
+                break;
+            case FERRY:
+                encoderValue = 0.15;
+                break;
+            default:
+                encoderValue = 0.21;
+                break;
+        }
+    }
+
     @Override
     public void initialize() {
         System.out.println("ShootCommand ");
@@ -76,7 +93,7 @@ public class SetAngleCommandTest2 extends Command {
     
     @Override
     public boolean isFinished() {
-        return rotate.onAngle;
+        return true;//rotate.onAngle;
     }
 
     double[] angleValues = {50.59359786

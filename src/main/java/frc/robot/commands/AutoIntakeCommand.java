@@ -9,6 +9,14 @@ public class AutoIntakeCommand extends Command {
 
     @Override
     public void initialize() {
+        addRequirements(intake);
+        if (intake.getEntryLaserDistance() > 150) {
+            intake.setPower(1);
+        }
+    }
+
+    @Override
+    public void execute() {
         if (intake.getEntryLaserDistance() > 150) {
             intake.setPower(1);
         }

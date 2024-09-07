@@ -21,11 +21,11 @@ public class Launcher extends SubsystemBase {
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
 
-    PIDController upperController = new PIDController(0.0015, 0.002, 0);
-    PIDController lowerController = new PIDController(0.0015, 0.002, 0);
+    PIDController upperController = new PIDController(0.0018, 0.004, 0);
+    PIDController lowerController = new PIDController(0.0018, 0.004, 0);
 
-    static final double upperKv = 0.00172;
-    static final double lowerKv = 0.00178;
+    static final double upperKv = 0.00174;
+    static final double lowerKv = 0.0018;
 
     double upperPower = 0;
     double lowerPower = 0;
@@ -69,8 +69,6 @@ public class Launcher extends SubsystemBase {
             atSpeedCounter = 0;
         }
 
-        atSpeed = atSpeedCounter > 20;
-
         upperPower = upperController.getSetpoint() * upperKv;
         lowerPower = lowerController.getSetpoint() * lowerKv;
 
@@ -99,7 +97,15 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean atSpeed() {
-        return atSpeed && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0;
+        return atSpeedCounter > 20 && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0;
+    }
+
+    public boolean atSpeed(int tolerance) {
+        if (tolerance == 0) {
+            double upperError = Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity());
+            return (upperError < 300) && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0; 
+        }
+        return atSpeedCounter > tolerance && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0;
     }
 
     @Override

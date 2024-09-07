@@ -39,8 +39,8 @@ public class ArmRotater extends SubsystemBase {
   public boolean onAngle = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
-  final double kMaxRotateSpeedUp = 0.1; //.7; // up .5 down -.2
-  final double kMaxRotateSpeedDown = -0.1; //-.3;
+  final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
+  final double kMaxRotateSpeedDown = -0.8; //-.3;
   static final double kLeftEncoderOffset = 0.51;//.49942
   static final double kRightEncoderOffset = 0.516;//.4945;
   final double kMaxEncoderDifference = .02;
@@ -71,7 +71,7 @@ public class ArmRotater extends SubsystemBase {
     motorRotateLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     motorRotateRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
-    targetRotateEncoder = currentEncoderValueLeft;
+    //targetRotateEncoder = currentEncoderValueLeft;
     //stop();
     //setShootInfo(currentShooterInfo);
   }
