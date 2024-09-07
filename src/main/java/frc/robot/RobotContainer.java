@@ -12,14 +12,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.Cancel;
 import frc.robot.commands.ChangeAngleCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.FireCommand;
 import frc.robot.commands.FireNote;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.SetAngleCommand;
 import frc.robot.commands.SetLauncherAngle;
+import frc.robot.commands.SetLauncherSpeedCommand;
 import frc.robot.commands.SetOnlyAngleCommand;
 //import frc.robot.commands.SetAngleCommandTest;
 import frc.robot.commands.ShootCommand;
@@ -27,6 +31,7 @@ import frc.robot.commands.ShootNowCommand;
 import frc.robot.commands.TimeStampCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InfoParams;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.ShootPosition;
@@ -40,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.TunerConstants;
@@ -71,6 +77,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //private final Shooter shooter = Shooter.getInstance("RobotContainer");
   private final Launcher launcher = Launcher.getInstance("RobotContainer");
+  private final Intake intake = Intake.getInstance("RobotContainer");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -124,8 +131,9 @@ public class RobotContainer {
 
     // OLD COMMANDS
 
-    m_driverController.leftBumper().onTrue(new InstantCommand(() -> launcher.setVelocities(6000, 0.1)));
-    m_driverController.leftBumper().onFalse(new InstantCommand(() -> launcher.setVelocities(0, 0)));
+    m_driverController.leftBumper().onTrue(new AutoIntakeCommand().andThen(new WaitCommand(0.5).andThen(new ProcNoteCommand())));
+    m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(3000, 3000).andThen(new FireCommand()));
+    //m_driverController.leftBumper().onFalse(new InstantCommand(() -> intake.setPower(0)));
 
     /*
     m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));

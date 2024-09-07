@@ -11,6 +11,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Launcher extends SubsystemBase {
@@ -20,16 +21,17 @@ public class Launcher extends SubsystemBase {
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
 
-    PIDController upperController = new PIDController(0.0015, 0.005, 0);
-    PIDController lowerController = new PIDController(0.00, 0, 0);
+    PIDController upperController = new PIDController(0.0015, 0.002, 0);
+    PIDController lowerController = new PIDController(0.0015, 0.002, 0);
 
     static final double upperKv = 0.00172;
-    static final double lowerKv = 0;
+    static final double lowerKv = 0.00178;
 
     double upperPower = 0;
     double lowerPower = 0;
 
     boolean atSpeed = true;
+    double atSpeedCounter = 0;
 
     boolean usePID = true;
 
@@ -58,13 +60,24 @@ public class Launcher extends SubsystemBase {
     }
 
     public void updatePIDs() {
+        double upperError = Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity());
+        double lowerError = Math.abs(lowerController.getSetpoint() - encoderLower.getVelocity());
+
+        if (upperError < 20 && lowerError < 20) {
+            atSpeedCounter++;
+        } else {
+            atSpeedCounter = 0;
+        }
+
+        atSpeed = atSpeedCounter > 20;
+
         upperPower = upperController.getSetpoint() * upperKv;
         lowerPower = lowerController.getSetpoint() * lowerKv;
 
-        if (Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity()) < 300) {
+        if (upperError < 300) {
             upperPower += upperController.calculate(encoderUpper.getVelocity());
         }
-        if (Math.abs(lowerController.getPositionError()) < 300) {
+        if (lowerError < 300) {
             lowerPower += lowerController.calculate(encoderLower.getVelocity());
         }
 
@@ -86,7 +99,7 @@ public class Launcher extends SubsystemBase {
     }
 
     public boolean atSpeed() {
-        return atSpeed;
+        return atSpeed && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0;
     }
 
     @Override
@@ -102,6 +115,8 @@ public class Launcher extends SubsystemBase {
         Logger.recordOutput("Launcher/LowerSetpoint", lowerController.getSetpoint());
         Logger.recordOutput("Launcher/LowerVelocity", encoderLower.getVelocity());
         Logger.recordOutput("Launcher/LowerVoltage", lowerPower);
+
+        Logger.recordOutput("Launcher/atSpeed", atSpeed());
 
     }
     

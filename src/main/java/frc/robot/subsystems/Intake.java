@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -70,6 +72,7 @@ public class Intake extends SubsystemBase {
           entryMeasurement = entryLaser.getMeasurement();
           if(entryMeasurement != null && entryMeasurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
             entryLaserDistance = entryMedianDistance.calculate(entryMeasurement.distance_mm);
+            Logger.recordOutput("Intake/EntryLaser", entryLaserDistance);
           }
         } catch (Exception e) {
           e.printStackTrace();
@@ -79,6 +82,7 @@ public class Intake extends SubsystemBase {
           exitMeasurement = exitLaser.getMeasurement();
           if(exitMeasurement != null && exitMeasurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
             exitLaserDistance = exitMedianDistance.calculate(exitMeasurement.distance_mm);
+            Logger.recordOutput("Intake/ExitLaser", exitLaserDistance);
           }
         } catch (Exception e) {
           e.printStackTrace();
