@@ -6,44 +6,26 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.IntakeNoteCommand;
-import frc.robot.commands.Autos;
-import frc.robot.commands.Cancel;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.FireCommand;
 import frc.robot.commands.AutoIntakeCommand;
-import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
 import frc.robot.commands.SetLauncherSpeedCommand;
-//import frc.robot.commands.SetAngleCommandTest;
-import frc.robot.commands.TimeStampCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.InfoParams;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Launcher;
-import frc.robot.subsystems.ShootInfo;
 import frc.robot.subsystems.LaunchPosition;
-import frc.robot.subsystems.Shooter;
 
-import java.util.Set;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -83,6 +65,7 @@ public class RobotContainer {
     
     // Configure the trigger bindings
     configureBindings();
+    registerCommands();
   }
 
   /**
@@ -119,69 +102,23 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
 
     
-    //SetAngleCommand auto = new SetAngleCommand(ShootPosition.AUTO);
-    //m_driverController.leftBumper().onTrue(auto);
-    //m_driverController.povDown().onFalse(new Cancel(auto));
+    // Launcher Controls
+    m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake
+    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
+    m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand())); // Amp shot
+    m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
+    m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
     
-
-    // OLD COMMANDS
-
-    m_driverController.leftTrigger().onTrue(new AutoIntakeCommand());
-    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true)));
-    m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand()));
-    m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())));
-    m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY));
-    //m_driverController.leftBumper().onFalse(new InstantCommand(() -> intake.setPower(0)));
-
-    //m_driverController.leftBumper().onFalse(new Cancel(rotate));
-    
-    /*
-    m_driverController.povRight().onTrue(new ShootNowCommand(ShootPosition.AMP));
-    
-    IntakeCommand moveNoteForward = new IntakeCommand(shooter,.1);
-    m_driverController.povUp().onTrue(moveNoteForward);
-    m_driverController.povUp().onFalse(new Cancel(moveNoteForward));
-
-    IntakeCommand moveNoteBack = new IntakeCommand(shooter,-.1);
-    m_driverController.povDown().onTrue(moveNoteBack);
-    m_driverController.povDown().onFalse(new Cancel(moveNoteBack));
-
-    m_driverController.rightTrigger().onTrue(new ShootNowCommand(ShootPosition.SUBWOOFER));//(new ShootCommand(ShootPosition.SUBWOOFER)));
-    m_driverController.leftTrigger().onTrue((new ShootCommand(ShootPosition.INTAKE).andThen(new SetLauncherAngle(0.2))));
-    m_driverController.rightBumper().onTrue(new ShootCommand(ShootPosition.HORIZONTAL));
-    m_driverController.leftBumper().onTrue(new SetOnlyAngleCommand(ShootPosition.SUBWOOFER));
-    */
-    m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
-    
-    // SetAngleCommandTest up = new SetAngleCommandTest(new ShootInfo(.212, 0.0, 0.0, 0.0, 0.0));
-    // m_driverController.povRight().onTrue(up);
-    // m_driverController.povRight().onFalse(new Cancel(up));
-
-    // SetAngleCommandTest down = new SetAngleCommandTest(new ShootInfo(0, 0, 0, 0, 0));
-    // m_driverController.povDown().onTrue(down);
-    // m_driverController.povDown().onFalse(new Cancel(down));
-    
-    // SetAngleCommandTest ferry = new SetAngleCommandTest(new ShootInfo(.028, 0, 0, 0, 0));
-    // m_driverController.povLeft().onTrue(ferry);
-    // m_driverController.povLeft().onFalse(new Cancel(ferry));
-    
-    // SetAngleCommandTest straight = new SetAngleCommandTest(new ShootInfo(.1, 0, 0, 0, 0));
-    // m_driverController.povUp().onTrue(straight);
-    // m_driverController.povUp().onFalse(new Cancel(straight));
+    m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
     
     
-    
-    //m_driverController.x().whileTrue(new ChangeAngleCommand(shooter, -0.2));
-    //m_driverController.y().whileTrue(new ChangeAngleCommand(shooter, 0.2));
 
-    
+  }
 
-
-    //m_driverController.leftTrigger().whileTrue(new IntakeCommand(shooter, 0.3));
-    //m_driverController.leftBumper().whileTrue(new IntakeCommand(shooter, -0.3));
-
-    //m_driverController.b().whileTrue(new TimeStampCommand(shooter));
-
+  public static void registerCommands() {
+    NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(6000, 6000));
+    NamedCommands.registerCommand("Intake", new AutoIntakeCommand());
+    NamedCommands.registerCommand("FireNote", new FireCommand());
   }
 
   /**

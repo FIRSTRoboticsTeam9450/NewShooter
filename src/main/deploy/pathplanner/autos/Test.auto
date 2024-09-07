@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.0,
-      "y": 7.0
+      "x": 1.4048307100172925,
+      "y": 5.52155524239874
     },
     "rotation": 0
   },
@@ -12,9 +12,45 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "SpinUpLauncher"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Example Path"
+            "pathName": "CenterStartToCenterNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CenterNoteToSubwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpLauncher"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FireNote"
           }
         }
       ]
