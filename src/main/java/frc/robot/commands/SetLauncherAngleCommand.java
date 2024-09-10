@@ -42,7 +42,7 @@ public class SetLauncherAngleCommand extends Command {
     public SetLauncherAngleCommand(LaunchPosition position) {
         switch(position) {
             case SUBWOOFER:
-                encoderValue = 0.204;
+                encoderValue = 0.208;
                 break;
             case INTAKE:
                 encoderValue = 0.004;
@@ -51,7 +51,7 @@ public class SetLauncherAngleCommand extends Command {
                 encoderValue = 0.15;
                 break;
             default:
-                encoderValue = 0.204;
+                encoderValue = 0.208;
                 break;
         }
     }

@@ -2,10 +2,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Launcher;
 
 public class ProcNoteCommand extends Command {
 
-    Intake intake = Intake.getInstance("ProcNoteCommand");;
+    Intake intake = Intake.getInstance("ProcNoteCommand");
+    Launcher launcher = Launcher.getInstance("ProcNoteCommand");
 
     @Override
     public void initialize() {
@@ -22,6 +24,7 @@ public class ProcNoteCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         intake.setPower(0);
+        launcher.setVelocities(0, 0);
     }
 
 

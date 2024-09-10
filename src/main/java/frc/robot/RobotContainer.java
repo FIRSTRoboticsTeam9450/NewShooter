@@ -118,7 +118,7 @@ public class RobotContainer {
   public static void registerCommands() {
     NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(6000, 6000));
     NamedCommands.registerCommand("Intake", new AutoIntakeCommand());
-    NamedCommands.registerCommand("FireNote", new FireCommand());
+    NamedCommands.registerCommand("FireNote", new FireCommand(true));
   }
 
   /**

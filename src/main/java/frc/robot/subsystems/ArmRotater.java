@@ -53,6 +53,11 @@ public class ArmRotater extends SubsystemBase {
   int periodicCounter = 0;
   int count = 0;
 
+  boolean goToTransitionPos = false;
+  double transitionPos = 0.17;
+  double prevTarget;
+
+
   
   public static ArmRotater getInstance(String name) {
     if(rotate == null) {
@@ -163,6 +168,10 @@ public class ArmRotater extends SubsystemBase {
   }
 
   public int setRotationTarget(double encoderValue) {
+    if (targetRotateEncoder > 0.2) {
+      goToTransitionPos = true;
+    }
+
     if(encoderValue != Double.MAX_VALUE) {
       targetRotateEncoder = encoderValue;
     }
@@ -170,6 +179,12 @@ public class ArmRotater extends SubsystemBase {
       System.out.println("Set target correctly");
       targetRotateEncoder = getLeftRotateEncoder();
     }
+
+    if (goToTransitionPos) {
+      prevTarget = targetRotateEncoder;
+      targetRotateEncoder = transitionPos;
+    }
+
     manageFlags();
     rampTimer.reset();
     return periodicCounter;
@@ -177,6 +192,7 @@ public class ArmRotater extends SubsystemBase {
 
 
   private void manageRotate() {
+
     currentEncoderValueLeft = getLeftRotateEncoder();
     currentEncoderValueRight = getRightRotateEncoder();
     if (targetRotateEncoder > (0.708 - 0.497)) {
@@ -195,6 +211,11 @@ public class ArmRotater extends SubsystemBase {
     }
     Logger.recordOutput("ArmPower", rotateLeftPower);
     setRotationSpeed(rotateLeftPower, rotateRightPower);
+
+    if (currentEncoderValueLeft < 0.2 && goToTransitionPos) {
+      goToTransitionPos = false;
+      targetRotateEncoder = prevTarget;
+    }
   }
 
   private void manageFlags() {
