@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,6 +16,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
@@ -31,7 +34,8 @@ public class ArmRotater extends SubsystemBase {
   SparkAbsoluteEncoder throughboreRotateRight = motorRotateRight.getAbsoluteEncoder();
 
   private static ArmRotater rotate;
-  Timer timer = new Timer();
+  Timer rampTimer = new Timer();
+  double rampTime = .5;
   //double powerMult = 1;
   double rotateLeftPower;
   double rotateRightPower;
@@ -71,6 +75,7 @@ public class ArmRotater extends SubsystemBase {
     motorRotateLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     motorRotateRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
+    rampTimer.restart();
     //targetRotateEncoder = currentEncoderValueLeft;
     //stop();
     //setShootInfo(currentShooterInfo);
@@ -92,8 +97,11 @@ public class ArmRotater extends SubsystemBase {
   double minPower = 0.05;
   public double rotate(double targetEncoderValue, double currentEncoderValue) {
     double error = (targetEncoderValue - currentEncoderValue);
-    double power = error * kp + boost;
-
+    double currentTime = rampTimer.get();
+    double rampMultiplier = currentTime < rampTime ? currentTime / rampTime : 1; 
+    rampMultiplier *= rampMultiplier;
+    Logger.recordOutput("Ramp", rampMultiplier);
+    double power = error * kp * rampMultiplier  + boost;
     if(!onAngle) {
       if(power > 0 && power < minPower) {
         power = minPower;
@@ -127,15 +135,18 @@ public class ArmRotater extends SubsystemBase {
         previousRotatePower = 0;
       }
       // can only change 0.004 per loop
-      if(power - previousRotatePower > .004) {
-        power = previousRotatePower + .004;//.004;
-      }
-      else if(power - previousRotatePower < -.004) {
-        power = previousRotatePower - .004;//.004;
-      }
+      // if(power - previousRotatePower > .004) {
+      //   power = previousRotatePower + .004;//.004;
+      // }
+      // if(power - previousRotatePower < -.004) {
+      //   power = previousRotatePower - .004;//.004;
+      // }
     }
     previousRotatePower = power;
     previousEncoder = currentEncoderValue;
+    // if (power < 0 && targetEncoderValue > 0.19) {
+    //   power = MathUtil.clamp(power, -0.5, 0.5);
+    // }
     return power;
   }
 
@@ -160,7 +171,7 @@ public class ArmRotater extends SubsystemBase {
       targetRotateEncoder = getLeftRotateEncoder();
     }
     manageFlags();
-
+    rampTimer.reset();
     return periodicCounter;
   }
 
@@ -182,6 +193,7 @@ public class ArmRotater extends SubsystemBase {
       rotateRightPower = 0;
       System.out.println("rotate encoder misaligned");
     }
+    Logger.recordOutput("ArmPower", rotateLeftPower);
     setRotationSpeed(rotateLeftPower, rotateRightPower);
   }
 

@@ -10,7 +10,7 @@ public class ProcNoteCommand extends Command {
     @Override
     public void initialize() {
         if (intake.getExitLaserDistance() < 150) {
-            intake.setPower(-0.15);
+            intake.setPower(-0.1);
         }
     }
 
