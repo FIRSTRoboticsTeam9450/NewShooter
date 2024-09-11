@@ -9,21 +9,32 @@ import frc.robot.subsystems.LaunchPosition;
 /** Automates the whole process of intaking a note. Moves the arm down, runs the intake, moves the arm up once a note is detected, and prepares the note to be fired */
 public class AutoIntakeCommand extends Command {
 
-    Command goToIntakeAngle = new SetLauncherAngleCommand(LaunchPosition.INTAKE);
-    Command goToStorageAngle = new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER);
-    Command runIntake = new IntakeNoteCommand();
-    Command wait = new WaitCommand(0.5);
-    Command processNote = new ProcNoteCommand();
+    double launchAngle;
 
-    Command toRun = new ParallelCommandGroup(
-        goToIntakeAngle,
-        new SequentialCommandGroup(
-            runIntake,
-            goToStorageAngle,
-            wait,
-            processNote
-        )
-    );
+    Command toRun;
+    Command stopWheels = new SetLauncherSpeedCommand(0, 0);
+
+    public AutoIntakeCommand() {
+        this(0.208);
+    }
+
+    public AutoIntakeCommand(double launchAngle) {
+        Command goToIntakeAngle = new SetLauncherAngleCommand(LaunchPosition.INTAKE);
+        Command goToStorageAngle = new SetLauncherAngleCommand(launchAngle);
+        Command runIntake = new IntakeNoteCommand();
+        Command wait = new WaitCommand(0.5);
+        Command processNote = new ProcNoteCommand();
+
+        toRun = new ParallelCommandGroup(
+            goToIntakeAngle,
+            new SequentialCommandGroup(
+                runIntake,
+                goToStorageAngle,
+                wait,
+                processNote
+            )
+        );
+    }
 
     @Override
     public void initialize() {
@@ -32,6 +43,9 @@ public class AutoIntakeCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        if (interrupted) {
+            stopWheels.schedule();
+        }
     }
 
     @Override

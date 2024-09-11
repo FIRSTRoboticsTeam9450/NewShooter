@@ -45,7 +45,7 @@ public class SetLauncherAngleCommand extends Command {
                 encoderValue = 0.208;
                 break;
             case INTAKE:
-                encoderValue = 0.004;
+                encoderValue = 0.002;
                 break;
             case FERRY:
                 encoderValue = 0.15;

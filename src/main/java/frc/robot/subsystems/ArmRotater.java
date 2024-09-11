@@ -190,6 +190,10 @@ public class ArmRotater extends SubsystemBase {
     return periodicCounter;
   }
 
+  public void changeSetpointBy(double value) {
+    targetRotateEncoder += value;
+  }
+
 
   private void manageRotate() {
 

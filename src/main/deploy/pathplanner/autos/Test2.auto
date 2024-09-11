@@ -56,66 +56,9 @@
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "CenterNoteToSubwoofer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SpinUpLauncher"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "FireNote"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "SubwooferToRightNote"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "RightNoteToSubwoofer"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SpinUpLauncher"
-                }
-              }
-            ]
+            "name": "SpinUpLauncher"
           }
         },
         {

@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ArmRotater;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -55,6 +56,7 @@ public class RobotContainer {
   //private final Shooter shooter = Shooter.getInstance("RobotContainer");
   private final Launcher launcher = Launcher.getInstance("RobotContainer");
   private final Intake intake = Intake.getInstance("RobotContainer");
+  private final ArmRotater arm = ArmRotater.getInstance("RobotContainer");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -108,6 +110,8 @@ public class RobotContainer {
     m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand())); // Amp shot
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
     m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
+    m_driverController.povUp().onTrue(new InstantCommand(() -> arm.changeSetpointBy(0.005)));
+    m_driverController.povDown().onTrue(new InstantCommand(() -> arm.changeSetpointBy(-0.005)));
     
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
     
@@ -117,7 +121,7 @@ public class RobotContainer {
 
   public static void registerCommands() {
     NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(6000, 6000));
-    NamedCommands.registerCommand("Intake", new AutoIntakeCommand());
+    NamedCommands.registerCommand("Intake", new AutoIntakeCommand(0.043)); // 0.195, 0.043
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
   }
 
@@ -128,6 +132,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return drivetrain.getAutoPath("Test"); //Autos.exampleAuto(shooter);
+    return drivetrain.getAutoPath("Test2"); //Autos.exampleAuto(shooter);
   }
 }
