@@ -18,7 +18,7 @@ public class ProcNoteCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.getExitLaserDistance() > 150;
+        return intake.getExitLaserDistance() >= 150;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ArmRotater extends SubsystemBase {
   double currentEncoderValueRight = 0;
   final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
   final double kMaxRotateSpeedDown = -0.8; //-.3;
-  static final double kLeftEncoderOffset = 0.51;//.49942
+  static final double kLeftEncoderOffset = 0.512;//.49942
   static final double kRightEncoderOffset = 0.516;//.4945;
   final double kMaxEncoderDifference = .02;
   double previousRotatePower = 0;
@@ -74,14 +74,18 @@ public class ArmRotater extends SubsystemBase {
     motorRotateLeft.setInverted(true);
     motorRotateRight.setInverted(false);
 
-    // leftRotateMotor.setIdleMode(IdleMode.kCoast);
-    // rightRotateMotor.setIdleMode(IdleMode.kCoast);
+    motorRotateLeft.setIdleMode(IdleMode.kCoast);
+    motorRotateRight.setIdleMode(IdleMode.kCoast);
 
     motorRotateLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     motorRotateRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
+    motorRotateLeft.burnFlash();
+    motorRotateRight.burnFlash();
+
     rampTimer.restart();
-    //targetRotateEncoder = currentEncoderValueLeft;
+
+    targetRotateEncoder = 0.208;
     //stop();
     //setShootInfo(currentShooterInfo);
   }
@@ -256,6 +260,11 @@ public class ArmRotater extends SubsystemBase {
     SmartDashboard.putNumber("right throughbore position", currentEncoderValueRight);
     SmartDashboard.putNumber("Target left Encoder", targetRotateEncoder);
     SmartDashboard.putBoolean("On angle", onAngle);
+
+    Logger.recordOutput("Arm/Left Encoder", getLeftRotateEncoder());
+    Logger.recordOutput("Arm/Right Encoder", getRightRotateEncoder());
+    Logger.recordOutput("Arm/Encoder Target", targetRotateEncoder);
+    Logger.recordOutput("OnAngle", onAngle);
     //System.out.println(currentShooterInfo.intakeSpeed + " INTAKE SPEED");
 }
 

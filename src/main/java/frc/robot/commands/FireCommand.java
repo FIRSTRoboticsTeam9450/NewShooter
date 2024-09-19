@@ -55,7 +55,7 @@ public class FireCommand extends Command {
     @Override
     public boolean isFinished() {
         // stop the wheels 1 second after the note was fired
-        return (fired && timer.hasElapsed(1)) || dontRun;
+        return (fired && timer.hasElapsed(0.5)) || dontRun;
     }
 
     @Override

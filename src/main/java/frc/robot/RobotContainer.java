@@ -12,8 +12,12 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.FireCommand;
+import frc.robot.commands.IntakeNoteCommand;
+import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
 import frc.robot.commands.SetLauncherSpeedCommand;
@@ -36,6 +40,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  SendableChooser<String> autoChooser = new SendableChooser<String>();
+
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -68,6 +74,13 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     registerCommands();
+
+    autoChooser.addOption("3 Note Auto", "ThreeNoteAuto");
+    autoChooser.addOption("Preload Only", "PRELOAD");
+    autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
+    autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -121,7 +134,11 @@ public class RobotContainer {
 
   public static void registerCommands() {
     NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(6000, 6000));
-    NamedCommands.registerCommand("Intake", new AutoIntakeCommand(0.043)); // 0.195, 0.043
+    NamedCommands.registerCommand("IntakeCenter", new AutoIntakeCommand(0.043)); // 0.195, 0.043
+    NamedCommands.registerCommand("Intake", new AutoIntakeCommand()); // 0.195, 0.043
+    NamedCommands.registerCommand("IntakeOnly", new IntakeNoteCommand().alongWith(new SetLauncherAngleCommand(LaunchPosition.INTAKE)));
+    NamedCommands.registerCommand("ProcessNote", new ProcNoteCommand());
+    NamedCommands.registerCommand("ArmToSubwoofer", new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER));
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
   }
 
@@ -132,6 +149,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return drivetrain.getAutoPath("Test2"); //Autos.exampleAuto(shooter);
+    String selection = autoChooser.getSelected();
+    if (selection.equals("PRELOAD")) {
+      return new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true));
+    }
+    return drivetrain.getAutoPath(autoChooser.getSelected()); //Autos.exampleAuto(shooter);
   }
 }

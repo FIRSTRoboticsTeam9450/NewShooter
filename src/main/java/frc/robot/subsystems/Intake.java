@@ -116,6 +116,8 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         updateLasers();
+        Logger.recordOutput("Intake/IntakeVelocity", motorIntake.getEncoder().getVelocity());
+        Logger.recordOutput("Intake/IntakePower", motorIntake.get());
     }
   
 }
