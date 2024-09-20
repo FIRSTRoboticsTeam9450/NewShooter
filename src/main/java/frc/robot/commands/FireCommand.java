@@ -15,6 +15,8 @@ public class FireCommand extends Command {
     boolean dontRun;
     boolean dontStabilize;
 
+    int globalTolerance = 20;
+
     Timer timer = new Timer();
 
     
@@ -28,6 +30,10 @@ public class FireCommand extends Command {
      */
     public FireCommand(boolean dontStabilize) {
         this.dontStabilize = dontStabilize;
+    }
+
+    public FireCommand(int tolerance) {
+        this.globalTolerance = tolerance;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class FireCommand extends Command {
 
     @Override
     public void execute() {
-        int tolerance = dontStabilize ? 0 : 20;
+        int tolerance = dontStabilize ? 0 : globalTolerance;
         if (launcher.atSpeed(tolerance) && !fired) {
             intake.setPower(1);
             timer.restart();

@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Controls the two primary launcher motors */
@@ -33,6 +34,8 @@ public class Launcher extends SubsystemBase {
     double atSpeedCounter = 0;
 
     boolean usePID = true;
+
+    Timer noPidTimer = new Timer();
 
     private static Launcher launcher;
 
@@ -112,6 +115,7 @@ public class Launcher extends SubsystemBase {
     public void setPowers(double upper, double lower) {
         motorUpper.set(upper);
         motorLower.set(lower);
+        noPidTimer.restart();
     }
 
     /** Returns whether the Launcher is running at a stable and accurate speed */
@@ -125,6 +129,9 @@ public class Launcher extends SubsystemBase {
      * @return The Launcher's state
      */
     public boolean atSpeed(int tolerance) {
+        if (!usePID) {
+            return noPidTimer.hasElapsed(1);
+        }
         if (tolerance == 0) {
             double upperError = Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity());
             return (upperError < 300) && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0; 

@@ -19,6 +19,7 @@ import frc.robot.commands.FireCommand;
 import frc.robot.commands.IntakeNoteCommand;
 import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.AutoIntakeCommand;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
 import frc.robot.commands.SetLauncherSpeedCommand;
 import frc.robot.subsystems.Intake;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ArmRotater;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 /**
@@ -62,11 +64,14 @@ public class RobotContainer {
   //private final Shooter shooter = Shooter.getInstance("RobotContainer");
   private final Launcher launcher = Launcher.getInstance("RobotContainer");
   private final Intake intake = Intake.getInstance("RobotContainer");
+  private final ClimbSubsystem climb = ClimbSubsystem.getInstance();
   private final ArmRotater arm = ArmRotater.getInstance("RobotContainer");
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  private final CommandXboxController m_driver2 = new CommandXboxController(1);
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -118,9 +123,12 @@ public class RobotContainer {
 
     
     // Launcher Controls
-    m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake
-    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
-    m_driverController.povRight().onTrue(new SetLauncherSpeedCommand(648.4, 1656).andThen(new FireCommand())); // Amp shot
+    m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
+    m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
+    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(628.4, 1616).andThen(new FireCommand(5))); // Amp shot
+    
+    //m_driverController.rightTrigger().onTrue(new InstantCommand(() -> launcher.setPowers(0.13, 0.28)).andThen(new FireCommand(5))); // Amp shot
+
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
     m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
     m_driverController.povUp().onTrue(new InstantCommand(() -> arm.changeSetpointBy(0.005)));
@@ -128,7 +136,22 @@ public class RobotContainer {
     
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
     
-    
+    //m_driver2.leftBumper().onTrue(new InstantCommand(() -> climb.setLeftVoltage(6)));
+    //m_driver2.leftBumper().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
+    //m_driver2.rightBumper().onTrue(new InstantCommand(() -> climb.setRightVoltage(6)));
+    //m_driver2.rightBumper().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
+
+    //m_driver2.leftTrigger().onTrue(new InstantCommand(() -> climb.setLeftVoltage(-6)));
+    //m_driver2.leftTrigger().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
+    //m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-6)));
+    //m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
+
+    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(73.5)));
+    m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
+
+    m_driver2.a().onTrue(new InstantCommand(() -> climb.reset()));
+
+
 
   }
 
