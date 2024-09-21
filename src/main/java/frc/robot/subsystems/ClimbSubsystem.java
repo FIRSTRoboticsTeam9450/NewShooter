@@ -19,8 +19,10 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     public void setSetpoint(double setpoint) {
-        lClimb.setSetpoint(setpoint);
-        rClimb.setSetpoint(setpoint);
+        if (setpoint >= 0 && setpoint <= 72) {
+            lClimb.setSetpoint(-setpoint);
+            rClimb.setSetpoint(-setpoint);
+        }
     }
 
     public void setVoltages(double left, double right) {
@@ -37,8 +39,17 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     public void reset() {
+        lClimb.resetEncoder();
+        rClimb.resetEncoder();
+    }
+
+    public void runDownAndReset() {
         lClimb.reset();
         rClimb.reset();
+    }
+
+    public boolean isResetting() {
+        return lClimb.isResetting() && rClimb.isResetting();
     }
 
     public boolean atPosition() {
@@ -49,6 +60,10 @@ public class ClimbSubsystem extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("Climb/Left Position", lClimb.getPosition());
         Logger.recordOutput("Climb/Right Position", rClimb.getPosition());
+
+        Logger.recordOutput("Climb/Left Lower Limit", lClimb.lowerLimitSwitch());
+        Logger.recordOutput("Climb/Right Lower Limit", rClimb.lowerLimitSwitch());
+
 
     }
     

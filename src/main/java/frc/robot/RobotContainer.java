@@ -12,12 +12,15 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.FireCommand;
 import frc.robot.commands.IntakeNoteCommand;
 import frc.robot.commands.ProcNoteCommand;
+import frc.robot.commands.ResetClimbCommand;
+import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
@@ -83,6 +86,7 @@ public class RobotContainer {
     autoChooser.addOption("3 Note Auto", "ThreeNoteAuto");
     autoChooser.addOption("Preload Only", "PRELOAD");
     autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
+    autoChooser.addOption("2 Note Source Side", "SourceTwoNote");
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -109,9 +113,9 @@ public class RobotContainer {
             .withVelocityY(-Math.signum(joystick.getLeftX()) * Math.pow(joystick.getLeftX(), 2) * (MaxSpeed)) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * (MaxAngularRate)) // Drive counterclockwise with negative X (left)
         ));
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake)); // to driver 2
+    // joystick.b().whileTrue(drivetrain
+    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     joystick.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -130,28 +134,27 @@ public class RobotContainer {
     //m_driverController.rightTrigger().onTrue(new InstantCommand(() -> launcher.setPowers(0.13, 0.28)).andThen(new FireCommand(5))); // Amp shot
 
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
-    m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
-    m_driverController.povUp().onTrue(new InstantCommand(() -> arm.changeSetpointBy(0.005)));
-    m_driverController.povDown().onTrue(new InstantCommand(() -> arm.changeSetpointBy(-0.005)));
+    //m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
+    //m_driverController.povUp().onTrue(new InstantCommand(() -> arm.changeSetpointBy(0.005)));
+    //m_driverController.povDown().onTrue(new InstantCommand(() -> arm.changeSetpointBy(-0.005)));
     
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
+    m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1));
     
-    //m_driver2.leftBumper().onTrue(new InstantCommand(() -> climb.setLeftVoltage(6)));
-    //m_driver2.leftBumper().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
-    //m_driver2.rightBumper().onTrue(new InstantCommand(() -> climb.setRightVoltage(6)));
-    //m_driver2.rightBumper().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
+    // m_driver2.leftBumper().onTrue(new InstantCommand(() -> climb.setLeftVoltage(1)));
+    // m_driver2.leftBumper().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
+    // m_driver2.rightBumper().onTrue(new InstantCommand(() -> climb.setRightVoltage(1)));
+    // m_driver2.rightBumper().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
 
-    //m_driver2.leftTrigger().onTrue(new InstantCommand(() -> climb.setLeftVoltage(-6)));
-    //m_driver2.leftTrigger().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
-    //m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-6)));
-    //m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
+    // m_driver2.leftTrigger().onTrue(new InstantCommand(() -> climb.setLeftVoltage(-1)));
+    // m_driver2.leftTrigger().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
+    // m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-1)));
+    // m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
 
-    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(73.5)));
+    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(68)));
     m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
 
-    m_driver2.a().onTrue(new InstantCommand(() -> climb.reset()));
-
-
+    m_driver2.rightBumper().onTrue(new ResetClimbCommand());
 
   }
 
