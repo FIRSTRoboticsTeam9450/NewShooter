@@ -172,9 +172,11 @@ public class ArmRotater extends SubsystemBase {
   }
 
   public int setRotationTarget(double encoderValue) {
+    /*
     if (targetRotateEncoder > 0.2) {
       goToTransitionPos = true;
     }
+    */
 
     if(encoderValue != Double.MAX_VALUE) {
       targetRotateEncoder = encoderValue;

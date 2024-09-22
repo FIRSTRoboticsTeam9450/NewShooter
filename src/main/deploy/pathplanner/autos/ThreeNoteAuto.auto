@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SpinUpLauncher"
+            "name": "SpinUpLauncherSlow"
           }
         },
         {
@@ -89,7 +89,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SpinUpLauncher"
+            "name": "SpinUpLauncherSlow"
           }
         },
         {

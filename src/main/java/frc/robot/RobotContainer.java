@@ -50,6 +50,9 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 2 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
+  double upperAmpVelocity = 628.4;
+  double lowerAmpVelocity = 1616;
+
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
@@ -87,7 +90,10 @@ public class RobotContainer {
     autoChooser.addOption("Preload Only", "PRELOAD");
     autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
     autoChooser.addOption("2 Note Source Side", "SourceTwoNote");
+    autoChooser.addOption("Preload Exit Source", "SourceExit");
+
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
+
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
@@ -113,7 +119,7 @@ public class RobotContainer {
             .withVelocityY(-Math.signum(joystick.getLeftX()) * Math.pow(joystick.getLeftX(), 2) * (MaxSpeed)) // Drive left with negative X (left)
             .withRotationalRate(-joystick.getRightX() * (MaxAngularRate)) // Drive counterclockwise with negative X (left)
         ));
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake)); // to driver 2
+    m_driver2.a().whileTrue(drivetrain.applyRequest(() -> brake)); // to driver 2
     // joystick.b().whileTrue(drivetrain
     //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
@@ -129,8 +135,10 @@ public class RobotContainer {
     // Launcher Controls
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
     m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
-    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(628.4, 1616).andThen(new FireCommand(5))); // Amp shot
+    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
     
+    m_driver2.y().onTrue(new SetLauncherSpeedCommand(668.4, 1696).andThen(new FireCommand(5)));
+
     //m_driverController.rightTrigger().onTrue(new InstantCommand(() -> launcher.setPowers(0.13, 0.28)).andThen(new FireCommand(5))); // Amp shot
 
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
@@ -154,7 +162,7 @@ public class RobotContainer {
     m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(68)));
     m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
 
-    m_driver2.rightBumper().onTrue(new ResetClimbCommand());
+    m_driver2.leftBumper().onTrue(new ResetClimbCommand());
 
   }
 
@@ -166,6 +174,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ProcessNote", new ProcNoteCommand());
     NamedCommands.registerCommand("ArmToSubwoofer", new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER));
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
+    NamedCommands.registerCommand("SpinUpLauncherSlow", new SetLauncherSpeedCommand(5500, 5500));
   }
 
   /**
