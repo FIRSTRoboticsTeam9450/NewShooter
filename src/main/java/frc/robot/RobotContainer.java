@@ -91,6 +91,10 @@ public class RobotContainer {
     autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
     autoChooser.addOption("2 Note Source Side", "SourceTwoNote");
     autoChooser.addOption("Preload Exit Source", "SourceExit");
+    autoChooser.addOption("Amp Center Note", "AmpCenterNote2");
+    autoChooser.addOption("Amp Three Note", "AmpThreeNote");
+    autoChooser.addOption("Source Center Note", "SourceCenterNote");
+
 
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
 
@@ -143,8 +147,10 @@ public class RobotContainer {
 
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
     //m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
-    //m_driverController.povUp().onTrue(new InstantCommand(() -> arm.changeSetpointBy(0.005)));
-    //m_driverController.povDown().onTrue(new InstantCommand(() -> arm.changeSetpointBy(-0.005)));
+    m_driver2.b().onTrue(new InstantCommand(() -> arm.setVoltage(0.05, 0.05)));
+    m_driver2.b().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
+    m_driver2.x().onTrue(new InstantCommand(() -> arm.setVoltage(-0.05, -0.05)));
+    m_driver2.x().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
     
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
     m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1));

@@ -57,6 +57,8 @@ public class ArmRotater extends SubsystemBase {
   double transitionPos = 0.17;
   double prevTarget;
 
+  boolean runPid = true;
+
 
   
   public static ArmRotater getInstance(String name) {
@@ -97,6 +99,12 @@ public class ArmRotater extends SubsystemBase {
 
     SmartDashboard.putNumber("rotate speed", leftPower);
 
+  }
+
+  public void setVoltage(double left, double right) {
+    runPid = false;
+    motorRotateLeft.set(left);
+    motorRotateRight.set(right);
   }
 
   double previousEncoder = currentEncoderValueLeft;
@@ -172,6 +180,7 @@ public class ArmRotater extends SubsystemBase {
   }
 
   public int setRotationTarget(double encoderValue) {
+    runPid = true;
     /*
     if (targetRotateEncoder > 0.2) {
       goToTransitionPos = true;
@@ -252,9 +261,11 @@ public class ArmRotater extends SubsystemBase {
   @Override
   public void periodic() {
 
-    manageRotate();
-
-    manageFlags();
+    if (runPid) {
+      manageRotate();
+      manageFlags();
+    }
+    
     periodicCounter++;
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("left throughbore position", currentEncoderValueLeft);

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4048307100172925,
-      "y": 5.52155524239874
+      "x": 0.7419704992582852,
+      "y": 6.69852881645953
     },
-    "rotation": 180.0
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
@@ -28,31 +28,24 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Intake"
+                  "pathName": "AmpStartToAmpNote"
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "CenterStartToCenterNote"
-                      }
-                    }
-                  ]
+                  "name": "IntakeOnly"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
           }
         },
         {
@@ -62,16 +55,34 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": null
+                  "pathName": "AmpNoteToSubwoofer"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SpinUpLauncher"
+                  "name": "ArmToSubwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ProcessNote"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpLauncher"
           }
         },
         {
@@ -87,16 +98,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "IntakeOnly"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "SubwooferToRightNote"
+                  "pathName": "AmpToCenterNote"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
           }
         },
         {
@@ -106,16 +123,34 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightNoteToSubwoofer"
+                  "pathName": "CenterAmpNoteToSub"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SpinUpLauncher"
+                  "name": "ArmToSubwoofer"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ProcessNote"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpinUpLauncher"
           }
         },
         {
