@@ -7,6 +7,8 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -176,7 +178,7 @@ public class RobotContainer {
     // m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-1)));
     // m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
 
-    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(68)));
+    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(60))); //68 is original top limit switch, 60 is testing for amp height
     m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
 
     m_driver2.leftBumper().onTrue(new ResetClimbCommand());

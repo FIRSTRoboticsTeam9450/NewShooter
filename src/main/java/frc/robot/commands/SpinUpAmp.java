@@ -20,7 +20,7 @@ public class SpinUpAmp extends Command { // RENAME PLS
 
     @Override
     public void initialize() {
-        Command x = new SequentialCommandGroup(new ClimbCommand(current.getClimb()), new SetLauncherSpeedCommand(current.getUpper(), current.getLower()), );
+        // Command x = new SequentialCommandGroup(new ClimbCommand(current.getClimb()), new SetLauncherSpeedCommand(current.getUpper(), current.getLower()), );
         
     }
 
