@@ -18,9 +18,11 @@ public class Launcher extends SubsystemBase {
 
     CANSparkFlex motorUpper = new CANSparkFlex(30, MotorType.kBrushless);
     CANSparkFlex motorLower = new CANSparkFlex(31, MotorType.kBrushless);
-    CANSparkFlex ampMotor = new CANSparkFlex(20000, MotorType.kBrushless); // Change
+    CANSparkFlex ampMotor = new CANSparkFlex(35, MotorType.kBrushless);
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
+
+    public static LauncherMode currentMode;
 
     // PIDF Config
     PIDController upperController = new PIDController(0.0018, 0.004, 0);
@@ -106,6 +108,10 @@ public class Launcher extends SubsystemBase {
     public void setVelocities(double upper, double lower) {
         upperController.setSetpoint(upper);
         lowerController.setSetpoint(lower);
+    }
+
+    public void setAmpPower(double power) {
+        ampMotor.set(power);
     }
 
     /**

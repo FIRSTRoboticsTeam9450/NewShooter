@@ -10,6 +10,7 @@ public class SetLauncherSpeedCommand extends Command {
 
     double upperVelocity;
     double lowerVelocity;
+    double ampPower;
 
     /**
      * Creates a new SetLauncherSpeedCommand
@@ -21,9 +22,16 @@ public class SetLauncherSpeedCommand extends Command {
         this.lowerVelocity = lowerVelocity;
     }
 
+    public SetLauncherSpeedCommand(double upperVelocity, double lowerVelocity, double ampPower) {
+        this.ampPower = -ampPower;
+        this.upperVelocity = upperVelocity;
+        this.lowerVelocity = lowerVelocity;
+    }
+
     @Override
     public void initialize() {
         launcher.setVelocities(upperVelocity, lowerVelocity);
+        launcher.setAmpPower(ampPower);
     }
 
     @Override

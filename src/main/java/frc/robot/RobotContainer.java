@@ -20,15 +20,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.FireCommand;
 import frc.robot.commands.IntakeNoteCommand;
+import frc.robot.commands.PickRobotMode;
 import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.ReverseIntakeCommand;
+import frc.robot.commands.RunRobotMode;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
 import frc.robot.commands.SetLauncherSpeedCommand;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Launcher;
+import frc.robot.subsystems.LauncherMode;
 import frc.robot.subsystems.LaunchPosition;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -141,7 +144,8 @@ public class RobotContainer {
     // Launcher Controls
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
     m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
-    m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
+    //m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
+    m_driverController.rightTrigger().onTrue(new RunRobotMode());
 
 
 
@@ -160,10 +164,10 @@ public class RobotContainer {
 
     m_driverController.leftBumper().onTrue(new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Storage position
     //m_driverController.povLeft().onTrue(new SetLauncherAngleCommand(LaunchPosition.FERRY)); // Ferry position
-    m_driver2.b().onTrue(new InstantCommand(() -> arm.setVoltage(0.05, 0.05)));
-    m_driver2.b().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
-    m_driver2.x().onTrue(new InstantCommand(() -> arm.setVoltage(-0.05, -0.05)));
-    m_driver2.x().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
+    // m_driver2.b().onTrue(new InstantCommand(() -> arm.setVoltage(0.05, 0.05)));
+    // m_driver2.b().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
+    //m_driver2.x().onTrue(new InstantCommand(() -> arm.setVoltage(-0.05, -0.05)));
+    //m_driver2.x().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
     
     m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
     m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1));
@@ -178,9 +182,10 @@ public class RobotContainer {
     // m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-1)));
     // m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
 
-    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(60))); //68 is original top limit switch, 60 is testing for amp height
+    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(68))); //68 is original top limit switch, 60 is for amp height
     m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
-
+    m_driver2.x().onTrue(new PickRobotMode(LauncherMode.AMP));
+    m_driver2.b().onTrue(new PickRobotMode(LauncherMode.SPEAKER));
     m_driver2.leftBumper().onTrue(new ResetClimbCommand());
 
   }
