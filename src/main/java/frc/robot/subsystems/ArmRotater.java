@@ -45,8 +45,8 @@ public class ArmRotater extends SubsystemBase {
   double currentEncoderValueRight = 0;
   final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
   final double kMaxRotateSpeedDown = -0.8; //-.3;
-  static final double kLeftEncoderOffset = 0.512;//.49942
-  static final double kRightEncoderOffset = 0.516;//.4945;
+  static final double kLeftEncoderOffset = 0.4824;//.49942
+  static final double kRightEncoderOffset = 0.49;//.4945;
   final double kMaxEncoderDifference = .02;
   double previousRotatePower = 0;
   final double kp = 9;
