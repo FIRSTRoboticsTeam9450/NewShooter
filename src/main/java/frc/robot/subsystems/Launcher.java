@@ -18,6 +18,7 @@ public class Launcher extends SubsystemBase {
 
     CANSparkFlex motorUpper = new CANSparkFlex(30, MotorType.kBrushless);
     CANSparkFlex motorLower = new CANSparkFlex(31, MotorType.kBrushless);
+    CANSparkFlex ampMotor = new CANSparkFlex(20000, MotorType.kBrushless); // Change
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
 

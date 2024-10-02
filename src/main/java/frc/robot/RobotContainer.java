@@ -140,7 +140,18 @@ public class RobotContainer {
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
     m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
     m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
+
+
+
+    // ------ TESTING SEPERATE REV MOTORS AND SHOOT CMD ------- // (done by Ryan who is not confident in coding skills, have Kevin CHECK (pun intended) it before deploying.)
+
+    // m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000)); //rev up motors
+    // m_driverController.rightTrigger().onTrue(new FireCommand(true)); // shoot subwoof
     
+    // -------- End of TESTING Area ^^^^ ------- //
+
+    
+
     m_driver2.y().onTrue(new SetLauncherSpeedCommand(668.4, 1696).andThen(new FireCommand(5)));
 
     //m_driverController.rightTrigger().onTrue(new InstantCommand(() -> launcher.setPowers(0.13, 0.28)).andThen(new FireCommand(5))); // Amp shot
