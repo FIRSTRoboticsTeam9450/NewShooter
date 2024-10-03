@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.Launcher;
+import frc.robot.subsystems.LauncherMode;
 
 public class ResetClimbCommand extends Command {
     
@@ -9,12 +11,13 @@ public class ResetClimbCommand extends Command {
 
     @Override
     public void initialize() {
+        Launcher.currentMode = LauncherMode.AMP;
         climb.runDownAndReset();
     }
 
     @Override
     public boolean isFinished() {
-        return climb.isResetting();
+        return !climb.isResetting();
     }
 
 }

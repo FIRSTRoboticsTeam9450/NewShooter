@@ -47,7 +47,7 @@ public class ArmRotater extends SubsystemBase {
   final double kMaxRotateSpeedDown = -0.8; //-.3;
   static final double kLeftEncoderOffset = 0.4824;//.49942
   static final double kRightEncoderOffset = 0.49;//.4945;
-  final double kMaxEncoderDifference = .02;
+  final double kMaxEncoderDifference = .01;
   double previousRotatePower = 0;
   final double kp = 9;
   final double encoderDifferenceP = 8;
@@ -225,9 +225,9 @@ public class ArmRotater extends SubsystemBase {
     rotateLeftPower = rotate(targetRotateEncoder, currentEncoderValueLeft);
     rotateRightPower = rotate(targetRotateEncoder, currentEncoderValueRight);
 
-    double errorBetween = currentEncoderValueLeft - currentEncoderValueRight;
-    rotateLeftPower -= errorBetween * encoderDifferenceP;
-    rotateRightPower += errorBetween * encoderDifferenceP;
+    //double errorBetween = currentEncoderValueLeft - currentEncoderValueRight;
+    //rotateLeftPower -= errorBetween * encoderDifferenceP;
+    //rotateRightPower += errorBetween * encoderDifferenceP;
 
     if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
       rotateLeftPower = 0;

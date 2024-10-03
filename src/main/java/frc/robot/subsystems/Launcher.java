@@ -22,7 +22,7 @@ public class Launcher extends SubsystemBase {
     RelativeEncoder encoderUpper = motorUpper.getEncoder();
     RelativeEncoder encoderLower = motorLower.getEncoder();
 
-    public static LauncherMode currentMode = LauncherMode.AMP;
+    public static LauncherMode currentMode = LauncherMode.SPEAKER;
 
     // PIDF Config
     PIDController upperController = new PIDController(0.0018, 0.004, 0);

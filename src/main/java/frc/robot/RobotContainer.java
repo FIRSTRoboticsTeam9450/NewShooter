@@ -25,6 +25,7 @@ import frc.robot.commands.ProcNoteCommand;
 import frc.robot.commands.ResetClimbCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunRobotMode;
+import frc.robot.commands.SpinUpLauncher;
 import frc.robot.commands.AutoIntakeCommand;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.SetLauncherAngleCommand;
@@ -169,7 +170,7 @@ public class RobotContainer {
     //m_driver2.x().onTrue(new InstantCommand(() -> arm.setVoltage(-0.05, -0.05)));
     //m_driver2.x().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
     
-    m_driverController.x().onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())); // Cancel all commands
+    m_driverController.x().onTrue(new SetLauncherSpeedCommand(0, 0, 0).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Cancel all commands
     m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1));
     
     // m_driver2.leftBumper().onTrue(new InstantCommand(() -> climb.setLeftVoltage(1)));
@@ -187,6 +188,7 @@ public class RobotContainer {
     m_driver2.x().onTrue(new PickRobotMode(LauncherMode.AMP));
     m_driver2.b().onTrue(new PickRobotMode(LauncherMode.SPEAKER));
     m_driver2.leftBumper().onTrue(new ResetClimbCommand());
+    m_driver2.leftTrigger().onTrue(new SpinUpLauncher());
 
   }
 

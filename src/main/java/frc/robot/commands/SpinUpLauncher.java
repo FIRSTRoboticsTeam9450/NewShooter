@@ -9,24 +9,16 @@ import frc.robot.subsystems.LauncherMode;
 /**
  * Based on the mode, it will choose speeds for the launcher then launch the note
  */
-public class RunRobotMode extends Command { // RENAME PLS
+public class SpinUpLauncher extends Command { // RENAME PLS
     
-    Command amp = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(3000, 3000, 1), 
-        new FireCommand(true), 
-        new WaitCommand(0.5),
-        new SetLauncherSpeedCommand(0, 0, 0)
-    );
+    Command amp = new SetLauncherSpeedCommand(3000, 3000, 1);
 
-    Command speaker = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(4500, 4500, 0),
-        new FireCommand(true)
-    );
+    Command speaker = new SetLauncherSpeedCommand(4500, 4500, 0);
 
     Command toRun;
     /**
      */
-    public RunRobotMode() {
+    public SpinUpLauncher() {
 
     }
 

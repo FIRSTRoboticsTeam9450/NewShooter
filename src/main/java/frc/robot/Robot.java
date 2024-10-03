@@ -26,7 +26,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "9450 Launcher Robot");
 
     Logger.addDataReceiver(new NT4Publisher());
-    Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+    //Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
     //new PowerDistribution(1, ModuleType.kRev);
     Logger.start();
   }
