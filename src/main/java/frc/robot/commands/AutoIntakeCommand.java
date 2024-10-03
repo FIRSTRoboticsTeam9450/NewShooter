@@ -15,7 +15,7 @@ public class AutoIntakeCommand extends Command {
     Command stopWheels = new SetLauncherSpeedCommand(0, 0);
 
     public AutoIntakeCommand() {
-        this(0.208);
+        this(0.205);
     }
 
     public AutoIntakeCommand(double launchAngle) {

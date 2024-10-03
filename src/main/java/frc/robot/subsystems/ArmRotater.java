@@ -35,7 +35,7 @@ public class ArmRotater extends SubsystemBase {
 
   private static ArmRotater rotate;
   Timer rampTimer = new Timer();
-  double rampTime = .5;
+  double rampTime = 1;
   //double powerMult = 1;
   double rotateLeftPower;
   double rotateRightPower;
@@ -43,13 +43,14 @@ public class ArmRotater extends SubsystemBase {
   public boolean onAngle = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
-  final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
+  final double kMaxRotateSpeedUp = 0.8; //.7; // up .5 down -.2
   final double kMaxRotateSpeedDown = -0.8; //-.3;
   static final double kLeftEncoderOffset = 0.4824;//.49942
   static final double kRightEncoderOffset = 0.49;//.4945;
   final double kMaxEncoderDifference = .02;
   double previousRotatePower = 0;
   final double kp = 9;
+  final double encoderDifferenceP = 8;
   int periodicCounter = 0;
   int count = 0;
 
@@ -87,7 +88,7 @@ public class ArmRotater extends SubsystemBase {
 
     rampTimer.restart();
 
-    targetRotateEncoder = 0.208;
+    targetRotateEncoder = 0.205;
     //stop();
     //setShootInfo(currentShooterInfo);
   }
@@ -223,12 +224,18 @@ public class ArmRotater extends SubsystemBase {
 
     rotateLeftPower = rotate(targetRotateEncoder, currentEncoderValueLeft);
     rotateRightPower = rotate(targetRotateEncoder, currentEncoderValueRight);
+
+    double errorBetween = currentEncoderValueLeft - currentEncoderValueRight;
+    rotateLeftPower -= errorBetween * encoderDifferenceP;
+    rotateRightPower += errorBetween * encoderDifferenceP;
+
     if(Math.abs(currentEncoderValueLeft - currentEncoderValueRight) > kMaxEncoderDifference) {
       rotateLeftPower = 0;
       rotateRightPower = 0;
       System.out.println("rotate encoder misaligned");
     }
-    Logger.recordOutput("ArmPower", rotateLeftPower);
+    Logger.recordOutput("LeftArmPower", rotateLeftPower);
+    Logger.recordOutput("RightArmPower", rotateRightPower);
     setRotationSpeed(rotateLeftPower, rotateRightPower);
 
     if (currentEncoderValueLeft < 0.2 && goToTransitionPos) {
