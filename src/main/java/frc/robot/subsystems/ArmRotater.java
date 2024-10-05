@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.RobotConstants;
 
 public class ArmRotater extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -35,7 +36,7 @@ public class ArmRotater extends SubsystemBase {
 
   private static ArmRotater rotate;
   Timer rampTimer = new Timer();
-  double rampTime = 1;
+  double rampTime = 0.5;
   //double powerMult = 1;
   double rotateLeftPower;
   double rotateRightPower;
@@ -43,14 +44,14 @@ public class ArmRotater extends SubsystemBase {
   public boolean onAngle = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
-  final double kMaxRotateSpeedUp = 0.8; //.7; // up .5 down -.2
+  final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
   final double kMaxRotateSpeedDown = -0.8; //-.3;
   static final double kLeftEncoderOffset = 0.4824;//.49942
   static final double kRightEncoderOffset = 0.49;//.4945;
   final double kMaxEncoderDifference = .01;
   double previousRotatePower = 0;
   final double kp = 9;
-  final double encoderDifferenceP = 8;
+  final double encoderDifferenceP = 2;
   int periodicCounter = 0;
   int count = 0;
 
@@ -88,7 +89,7 @@ public class ArmRotater extends SubsystemBase {
 
     rampTimer.restart();
 
-    targetRotateEncoder = 0.205;
+    targetRotateEncoder = RobotConstants.armSubwoofer;
     //stop();
     //setShootInfo(currentShooterInfo);
   }

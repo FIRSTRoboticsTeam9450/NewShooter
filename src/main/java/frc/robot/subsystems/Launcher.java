@@ -141,7 +141,8 @@ public class Launcher extends SubsystemBase {
         }
         if (tolerance == 0) {
             double upperError = Math.abs(upperController.getSetpoint() - encoderUpper.getVelocity());
-            return (upperError < 300) && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0; 
+            double lowerError = Math.abs(lowerController.getSetpoint() - encoderLower.getVelocity());
+            return (upperError < 300) && (lowerError < 300) && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0; 
         }
         return atSpeedCounter > tolerance && upperController.getSetpoint() != 0 && lowerController.getSetpoint() != 0;
     }

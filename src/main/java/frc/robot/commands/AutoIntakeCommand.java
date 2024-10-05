@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.RobotConstants;
 import frc.robot.subsystems.LaunchPosition;
 
 /** Automates the whole process of intaking a note. Moves the arm down, runs the intake, moves the arm up once a note is detected, and prepares the note to be fired */
@@ -15,7 +16,7 @@ public class AutoIntakeCommand extends Command {
     Command stopWheels = new SetLauncherSpeedCommand(0, 0);
 
     public AutoIntakeCommand() {
-        this(0.205);
+        this(RobotConstants.armSubwoofer);
     }
 
     public AutoIntakeCommand(double launchAngle) {

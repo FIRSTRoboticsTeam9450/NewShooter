@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.RobotConstants;
 import frc.robot.subsystems.ArmRotater;
 import frc.robot.subsystems.InfoParams;
 import frc.robot.subsystems.ShootInfo;
@@ -42,16 +43,16 @@ public class SetLauncherAngleCommand extends Command {
     public SetLauncherAngleCommand(LaunchPosition position) {
         switch(position) {
             case SUBWOOFER:
-                encoderValue = 0.205; // 0.208
+                encoderValue = RobotConstants.armSubwoofer; // 0.208
                 break;
             case INTAKE:
-                encoderValue = 0.002;
+                encoderValue = RobotConstants.armIntake;
                 break;
             case FERRY:
                 encoderValue = 0.043; // 0.15
                 break;
             default:
-                encoderValue = 0.205;
+                encoderValue = RobotConstants.armSubwoofer;
                 break;
         }
     }

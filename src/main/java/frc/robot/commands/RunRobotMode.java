@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.RobotConstants;
 import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.LauncherMode;
 
@@ -12,14 +13,14 @@ import frc.robot.subsystems.LauncherMode;
 public class RunRobotMode extends Command { // RENAME PLS
     
     Command amp = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(3000, 3000, 1), 
+        new SetLauncherSpeedCommand(RobotConstants.upperVelocityAmp, RobotConstants.lowerVelocityAmp, RobotConstants.ampPower), 
         new FireCommand(true), 
         new WaitCommand(0.5),
         new SetLauncherSpeedCommand(0, 0, 0)
     );
 
     Command speaker = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(4500, 4500, 0),
+        new SetLauncherSpeedCommand(RobotConstants.upperVelocitySpeaker, RobotConstants.lowerVelocitySpeaker, 0),
         new FireCommand(true)
     );
 

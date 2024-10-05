@@ -11,7 +11,7 @@ public class ResetClimbCommand extends Command {
 
     @Override
     public void initialize() {
-        Launcher.currentMode = LauncherMode.AMP;
+        Launcher.currentMode = LauncherMode.SPEAKER;
         climb.runDownAndReset();
     }
 

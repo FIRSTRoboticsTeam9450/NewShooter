@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.RobotConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.FireCommand;
 import frc.robot.commands.IntakeNoteCommand;
@@ -144,7 +145,7 @@ public class RobotContainer {
     
     // Launcher Controls
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
-    m_driverController.rightBumper().onTrue(new SetLauncherSpeedCommand(6000, 6000).andThen(new FireCommand(true))); // Subwoofer shot
+    m_driverController.rightBumper().onTrue(new RunRobotMode()); // Subwoofer shot
     //m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
     m_driverController.rightTrigger().onTrue(new RunRobotMode());
 
@@ -188,12 +189,14 @@ public class RobotContainer {
     m_driver2.x().onTrue(new PickRobotMode(LauncherMode.AMP));
     m_driver2.b().onTrue(new PickRobotMode(LauncherMode.SPEAKER));
     m_driver2.leftBumper().onTrue(new ResetClimbCommand());
-    m_driver2.leftTrigger().onTrue(new SpinUpLauncher());
+    //m_driver2.leftTrigger().onTrue(new SpinUpLauncher());
+
+    //m_driver2.rightTrigger().onTrue(new SetLauncherSpeedCommand(-1000, -1000, 0.5).andThen(new ClimbCommand(10).andThen(new IntakeNoteCommand().andThen(new ProcNoteCommand()))));
 
   }
 
   public static void registerCommands() {
-    NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(6000, 6000));
+    NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(RobotConstants.upperVelocitySpeaker, RobotConstants.lowerVelocitySpeaker));
     NamedCommands.registerCommand("IntakeCenter", new AutoIntakeCommand(0.043)); // 0.195, 0.043
     NamedCommands.registerCommand("Intake", new AutoIntakeCommand()); // 0.195, 0.043
     NamedCommands.registerCommand("IntakeOnly", new IntakeNoteCommand().alongWith(new SetLauncherAngleCommand(LaunchPosition.INTAKE)));
