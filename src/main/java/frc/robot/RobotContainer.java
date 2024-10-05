@@ -205,6 +205,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
     NamedCommands.registerCommand("SpinUpLauncherSlow", new SetLauncherSpeedCommand(5500, 5500));
   }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
