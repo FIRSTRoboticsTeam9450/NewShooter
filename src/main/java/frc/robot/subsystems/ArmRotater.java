@@ -84,6 +84,9 @@ public class ArmRotater extends SubsystemBase {
     motorRotateLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
     motorRotateRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
+    motorRotateLeft.setSmartCurrentLimit(60);
+    motorRotateRight.setSmartCurrentLimit(60);
+
     motorRotateLeft.burnFlash();
     motorRotateRight.burnFlash();
 

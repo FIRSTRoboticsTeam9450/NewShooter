@@ -119,6 +119,7 @@ public class Intake extends SubsystemBase {
         Logger.recordOutput("Intake/IntakeVelocity", motorIntake.getEncoder().getVelocity());
         Logger.recordOutput("Intake/IntakePower", motorIntake.get());
         Logger.recordOutput("Intake/HasNote", entryLaserDistance < 20);
+        
     }
   
 }

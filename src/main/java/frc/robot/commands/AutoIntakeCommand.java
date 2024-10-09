@@ -19,6 +19,10 @@ public class AutoIntakeCommand extends Command {
         this(RobotConstants.armSubwoofer);
     }
 
+    /**
+     * Creates a new AutoIntakeCommand
+     * @param launchAngle The desired angle to launch the note
+     */
     public AutoIntakeCommand(double launchAngle) {
         Command goToIntakeAngle = new SetLauncherAngleCommand(LaunchPosition.INTAKE);
         Command goToStorageAngle = new SetLauncherAngleCommand(launchAngle);

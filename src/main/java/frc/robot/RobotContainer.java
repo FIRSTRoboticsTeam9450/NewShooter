@@ -105,6 +105,8 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
 
+    autoChooser.addOption("Preload testing", "PreloadTesting");
+
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
@@ -172,7 +174,7 @@ public class RobotContainer {
     //m_driver2.x().onFalse(new InstantCommand(() -> arm.setVoltage(0, 0)));
     
     m_driverController.x().onTrue(new SetLauncherSpeedCommand(0, 0, 0).andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))); // Cancel all commands
-    m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1));
+    m_driverController.povDown().whileTrue(new ReverseIntakeCommand(1).alongWith(new SetLauncherSpeedCommand(-6000, -6000))).onFalse(new SetLauncherSpeedCommand(0, 0));
     
     // m_driver2.leftBumper().onTrue(new InstantCommand(() -> climb.setLeftVoltage(1)));
     // m_driver2.leftBumper().onFalse(new InstantCommand(() -> climb.setLeftVoltage(0)));
@@ -205,7 +207,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
     NamedCommands.registerCommand("SpinUpLauncherSlow", new SetLauncherSpeedCommand(5500, 5500));
   }
-  
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

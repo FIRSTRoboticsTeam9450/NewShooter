@@ -13,7 +13,7 @@ public class PickRobotMode extends Command { // RENAME PLS
     Launcher launcher = Launcher.getInstance("SetRobotMode");
     LauncherMode mode = LauncherMode.SPEAKER;
 
-    ClimbCommand climbAmp = new ClimbCommand(60);
+    ClimbCommand climbAmp = new ClimbCommand(68);
     ClimbCommand climbDown = new ClimbCommand(0);
 
     public PickRobotMode(LauncherMode mode) {

@@ -22,6 +22,12 @@ public class SetLauncherSpeedCommand extends Command {
         this.lowerVelocity = lowerVelocity;
     }
 
+    /**
+     * Creates a new SetLauncherSpeedCommand
+     * @param upperVelocity The desired RPM of the top motor
+     * @param lowerVelocity The desired RPM of the bottom motor
+     * @param ampPower The desired power of the amp's shooter motor
+     */
     public SetLauncherSpeedCommand(double upperVelocity, double lowerVelocity, double ampPower) {
         this.ampPower = -ampPower;
         this.upperVelocity = upperVelocity;
