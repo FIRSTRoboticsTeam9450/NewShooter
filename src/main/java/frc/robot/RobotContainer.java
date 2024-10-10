@@ -39,6 +39,8 @@ import frc.robot.subsystems.LaunchPosition;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ArmRotater;
@@ -101,7 +103,7 @@ public class RobotContainer {
     autoChooser.addOption("Amp Center Note", "AmpCenterNote2");
     autoChooser.addOption("Amp Three Note", "AmpThreeNote");
     autoChooser.addOption("Source Center Note", "SourceCenterNote");
-
+    autoChooser.addOption("FourNoteAuto", "FourNoteAuto");
 
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
 
@@ -147,7 +149,7 @@ public class RobotContainer {
     
     // Launcher Controls
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
-    m_driverController.rightBumper().onTrue(new RunRobotMode()); // Subwoofer shot
+    m_driverController.rightBumper().onTrue(new SetLauncherAngleCommand(0.197).andThen(new WaitCommand(1)).andThen(new RunRobotMode())); // Subwoofer shot
     //m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
     m_driverController.rightTrigger().onTrue(new RunRobotMode());
 

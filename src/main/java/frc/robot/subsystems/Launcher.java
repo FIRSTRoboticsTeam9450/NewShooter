@@ -110,6 +110,9 @@ public class Launcher extends SubsystemBase {
         lowerController.setSetpoint(lower);
     }
 
+    /** Sets the target velocities in power for the amp shooter motor
+     * @param power The desired power of the amp motor
+     */
     public void setAmpPower(double power) {
         ampMotor.set(power);
     }

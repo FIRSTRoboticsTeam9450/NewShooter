@@ -12,6 +12,7 @@ import frc.robot.subsystems.LauncherMode;
  */
 public class RunRobotMode extends Command { // RENAME PLS
     
+    // Create different commands based on modes using different values
     Command amp = new SequentialCommandGroup(
         new SetLauncherSpeedCommand(RobotConstants.upperVelocityAmp, RobotConstants.lowerVelocityAmp, RobotConstants.ampPower), 
         new FireCommand(true), 

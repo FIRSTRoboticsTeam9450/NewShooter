@@ -30,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "AmpToCenterNote3"
+                  "pathName": "AmpToCenterNoteFake"
                 }
               },
               {
@@ -55,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CenterAmpNoteToSub3"
+                  "pathName": "CenterNoteToSubFake"
                 }
               },
               {

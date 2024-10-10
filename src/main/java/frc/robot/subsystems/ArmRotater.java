@@ -44,8 +44,12 @@ public class ArmRotater extends SubsystemBase {
   public boolean onAngle = false;
   double currentEncoderValueLeft = 0;
   double currentEncoderValueRight = 0;
+
+  //Ryan has changed  V  from 1 to 0.2
   final double kMaxRotateSpeedUp = 1; //.7; // up .5 down -.2
-  final double kMaxRotateSpeedDown = -0.8; //-.3;
+  //Ryan has changed  V  from -0.8 to -0.16
+  final double kMaxRotateSpeedDown = -0.8; //-.3; //was -0.8 before hand
+
   static final double kLeftEncoderOffset = 0.4824;//.49942
   static final double kRightEncoderOffset = 0.49;//.4945;
   final double kMaxEncoderDifference = .01;
@@ -61,8 +65,11 @@ public class ArmRotater extends SubsystemBase {
 
   boolean runPid = true;
 
-
-  
+  /**
+     * Returns the instance of ArmRotater, ensuring only one copy is made
+     * @param name The name of the class requesting the ArmRotater instance
+     * @return An instance of ArmRotater
+  */
   public static ArmRotater getInstance(String name) {
     if(rotate == null) {
       rotate = new ArmRotater();
@@ -70,6 +77,8 @@ public class ArmRotater extends SubsystemBase {
     System.out.println(name + " aquired arm rotater");
     return rotate;
   }
+
+  // Set all motor values
   public ArmRotater() {
 
     motorRotateLeft.restoreFactoryDefaults();
@@ -97,6 +106,10 @@ public class ArmRotater extends SubsystemBase {
     //setShootInfo(currentShooterInfo);
   }
 
+  /** Takes a value between -1 <-> 1 for both arm powers
+   * @param leftPower Power for left rotation motor (not in RPM)
+   * @param rightPower Power for right rotation motor (not in RPM)
+  */
   public void setRotationSpeed(double leftPower, double rightPower) {
     
     motorRotateLeft.set(leftPower);
@@ -106,6 +119,7 @@ public class ArmRotater extends SubsystemBase {
 
   }
 
+  // not needed maybe maybe needed
   public void setVoltage(double left, double right) {
     runPid = false;
     motorRotateLeft.set(left);
@@ -116,7 +130,12 @@ public class ArmRotater extends SubsystemBase {
   double boost = 0;
   double boostThreshold = 0.1;
   double count2 = 0;
-  double minPower = 0.05;
+  double minPower = 0;
+
+  /** The PID for rotation, checks when it get to the target value
+   * @param targetEncoderValue Encoder value that the arm wants to go to
+   * @param currentEncoderValue Where the arm is currently at
+   */
   public double rotate(double targetEncoderValue, double currentEncoderValue) {
     double error = (targetEncoderValue - currentEncoderValue);
     double currentTime = rampTimer.get();
@@ -134,10 +153,10 @@ public class ArmRotater extends SubsystemBase {
     }
 
     if(power > boostThreshold) {
-      boost = .05;
+      //boost = .05;
     }
     else if(power < -boostThreshold) {
-      boost = -.05;
+      //boost = -.05;
     }
 
     if(currentEncoderValue > targetEncoderValue && previousEncoder < targetEncoderValue) {
@@ -175,15 +194,19 @@ public class ArmRotater extends SubsystemBase {
 
 
   // zero basing encoders left encoder has .497 offset, right has ?
-
+  /** Get the left rotater motor in rotations */
   public double getLeftRotateEncoder() {
     return kLeftEncoderOffset - throughboreRotateLeft.getPosition() /*- kLeftEncoderOffset*/;
   }
 
+  /** Get the right rotater motor in rotations */
   public double getRightRotateEncoder() {
     return kRightEncoderOffset - throughboreRotateRight.getPosition() /*- kRightEncoderOffset*/;
   }
 
+  /** Set a new rotation target and run the PID again
+   * @param encoderValue The new target encoder value
+   */
   public int setRotationTarget(double encoderValue) {
     runPid = true;
     /*
@@ -215,6 +238,8 @@ public class ArmRotater extends SubsystemBase {
   }
 
 
+  // Call rotation methods and make sure the values are within bounds
+  /** Call the PID, and make sure the current motors rotation is not out of bounds */
   private void manageRotate() {
 
     currentEncoderValueLeft = getLeftRotateEncoder();
@@ -248,6 +273,8 @@ public class ArmRotater extends SubsystemBase {
     }
   }
 
+  // Check if it is on the correct angle
+  /** Check if the encoder value is at the target and then set on angle to true */
   private void manageFlags() {
 
     if(Math.abs(targetRotateEncoder - currentEncoderValueLeft) < .001) {
@@ -272,6 +299,7 @@ public class ArmRotater extends SubsystemBase {
   @Override
   public void periodic() {
 
+    // Run PID, call the methods that manage everything
     if (runPid) {
       manageRotate();
       manageFlags();
