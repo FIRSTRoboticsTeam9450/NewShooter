@@ -12,6 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.ProcNoteCommand;
 
 /** Controls the two primary launcher motors */
 public class Launcher extends SubsystemBase {
@@ -152,6 +153,9 @@ public class Launcher extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("ProcNote Scheduled", ProcNoteCommand.scheduled);
+        Logger.recordOutput("ProcNote Intake Running", ProcNoteCommand.runningIntake);
+
         if (usePID) {
             updatePIDs();
         }

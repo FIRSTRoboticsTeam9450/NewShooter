@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.RobotConstants;
+import frc.RobotConstants.ArmConstants;
+import frc.RobotConstants.ClimbConstants;
+import frc.RobotConstants.LauncherConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.FireCommand;
 import frc.robot.commands.IntakeNoteCommand;
@@ -97,13 +100,14 @@ public class RobotContainer {
 
     autoChooser.addOption("3 Note Auto", "ThreeNoteAuto");
     autoChooser.addOption("Preload Only", "PRELOAD");
-    autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
-    autoChooser.addOption("2 Note Source Side", "SourceTwoNote");
+    //autoChooser.addOption("2 Note Amp Side", "AmpTwoNote");
+    //autoChooser.addOption("2 Note Source Side", "SourceTwoNote");
     autoChooser.addOption("Preload Exit Source", "SourceExit");
     autoChooser.addOption("Amp Center Note", "AmpCenterNote2");
-    autoChooser.addOption("Amp Three Note", "AmpThreeNote");
-    autoChooser.addOption("Source Center Note", "SourceCenterNote");
+    //autoChooser.addOption("Amp Three Note", "AmpThreeNote");
+    //autoChooser.addOption("Source Center Note", "SourceCenterNote");
     autoChooser.addOption("FourNoteAuto", "FourNoteAuto");
+    autoChooser.addOption("Center Start Center Note", "CenterCenterNote");
 
     autoChooser.setDefaultOption("3 Note Auto", "ThreeNoteAuto");
 
@@ -149,7 +153,7 @@ public class RobotContainer {
     
     // Launcher Controls
     m_driverController.leftTrigger().onTrue(new AutoIntakeCommand()); // Intake 628.4 1616
-    m_driverController.rightBumper().onTrue(new SetLauncherAngleCommand(0.197).andThen(new WaitCommand(1)).andThen(new RunRobotMode())); // Subwoofer shot
+    m_driverController.rightBumper().onTrue(new SetLauncherAngleCommand(ArmConstants.armCommunityLineShot).andThen(new WaitCommand(1)).andThen(new RunRobotMode())); // Subwoofer shot
     //m_driverController.rightTrigger().onTrue(new SetLauncherSpeedCommand(648.4, 1626).andThen(new FireCommand(5))); // Amp shot
     m_driverController.rightTrigger().onTrue(new RunRobotMode());
 
@@ -188,8 +192,8 @@ public class RobotContainer {
     // m_driver2.rightTrigger().onTrue(new InstantCommand(() -> climb.setRightVoltage(-1)));
     // m_driver2.rightTrigger().onFalse(new InstantCommand(() -> climb.setRightVoltage(0)));
 
-    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(68))); //68 is original top limit switch, 60 is for amp height
-    m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(0)));
+    m_driver2.povUp().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(ClimbConstants.climbPos, false))); //68 is original top limit switch, 60 is for amp height
+    m_driver2.povDown().onTrue(new SetLauncherAngleCommand(0.17).andThen(new ClimbCommand(ClimbConstants.downPos, false)));
     m_driver2.x().onTrue(new PickRobotMode(LauncherMode.AMP));
     m_driver2.b().onTrue(new PickRobotMode(LauncherMode.SPEAKER));
     m_driver2.leftBumper().onTrue(new ResetClimbCommand());
@@ -200,12 +204,12 @@ public class RobotContainer {
   }
 
   public static void registerCommands() {
-    NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(RobotConstants.upperVelocitySpeaker, RobotConstants.lowerVelocitySpeaker));
-    NamedCommands.registerCommand("IntakeCenter", new AutoIntakeCommand(0.043)); // 0.195, 0.043
+    NamedCommands.registerCommand("SpinUpLauncher", new SetLauncherSpeedCommand(LauncherConstants.upperVelocitySpeaker, LauncherConstants.lowerVelocitySpeaker));
     NamedCommands.registerCommand("Intake", new AutoIntakeCommand()); // 0.195, 0.043
     NamedCommands.registerCommand("IntakeOnly", new IntakeNoteCommand().alongWith(new SetLauncherAngleCommand(LaunchPosition.INTAKE)));
     NamedCommands.registerCommand("ProcessNote", new ProcNoteCommand());
     NamedCommands.registerCommand("ArmToSubwoofer", new SetLauncherAngleCommand(LaunchPosition.SUBWOOFER));
+    NamedCommands.registerCommand("ArmToSubwoofer2", new SetLauncherAngleCommand(0.192));
     NamedCommands.registerCommand("FireNote", new FireCommand(true));
     NamedCommands.registerCommand("SpinUpLauncherSlow", new SetLauncherSpeedCommand(5500, 5500));
   }

@@ -12,6 +12,8 @@ import com.revrobotics.SparkLimitSwitch.Type;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.RobotConstants;
+import frc.RobotConstants.LauncherConstants;
 
 public class Climber extends SubsystemBase {
 
@@ -21,6 +23,8 @@ public class Climber extends SubsystemBase {
     SparkLimitSwitch upperLimit;
     SparkLimitSwitch lowerLimit;
     RelativeEncoder encoder;
+
+    double maxPower = 8;
 
     double power;
 
@@ -48,6 +52,10 @@ public class Climber extends SubsystemBase {
         runPid = false;
     }
 
+    public void setMaxVoltage(double voltage) {
+        maxPower = voltage;
+    }
+
     public void setSetpoint(double setpoint) {
         pid.setSetpoint(setpoint);
         runPid = true;
@@ -59,7 +67,7 @@ public class Climber extends SubsystemBase {
 
     private void updatePid() {
         power = pid.calculate(encoder.getPosition());
-        power = MathUtil.clamp(power, -8, 8);
+        power = MathUtil.clamp(power, -maxPower, maxPower);
     }
 
     public boolean atPosition() {

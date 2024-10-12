@@ -18,6 +18,11 @@ public class ClimbSubsystem extends SubsystemBase {
         return climbSub;
     }
 
+    public void setMaxVoltage(double voltage) {
+        lClimb.setMaxVoltage(voltage);
+        rClimb.setMaxVoltage(voltage);
+    }
+
     public void setSetpoint(double setpoint) {
         if (setpoint >= 0 && setpoint <= 72) {
             lClimb.setSetpoint(-setpoint);

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.RobotConstants;
+import frc.RobotConstants.LauncherConstants;
 import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.LauncherMode;
 
@@ -14,14 +15,14 @@ public class RunRobotMode extends Command { // RENAME PLS
     
     // Create different commands based on modes using different values
     Command amp = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(RobotConstants.upperVelocityAmp, RobotConstants.lowerVelocityAmp, RobotConstants.ampPower), 
+        new SetLauncherSpeedCommand(LauncherConstants.upperVelocityAmp, LauncherConstants.lowerVelocityAmp, LauncherConstants.ampPower), 
         new FireCommand(true), 
         new WaitCommand(0.5),
         new SetLauncherSpeedCommand(0, 0, 0)
     );
 
     Command speaker = new SequentialCommandGroup(
-        new SetLauncherSpeedCommand(RobotConstants.upperVelocitySpeaker, RobotConstants.lowerVelocitySpeaker, 0),
+        new SetLauncherSpeedCommand(LauncherConstants.upperVelocitySpeaker, LauncherConstants.lowerVelocitySpeaker, 0),
         new FireCommand(true)
     );
 

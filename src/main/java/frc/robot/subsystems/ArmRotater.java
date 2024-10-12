@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.RobotConstants;
+import frc.RobotConstants.ArmConstants;
 
 public class ArmRotater extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -101,7 +102,7 @@ public class ArmRotater extends SubsystemBase {
 
     rampTimer.restart();
 
-    targetRotateEncoder = RobotConstants.armSubwoofer;
+    targetRotateEncoder = ArmConstants.armSubwoofer;
     //stop();
     //setShootInfo(currentShooterInfo);
   }
